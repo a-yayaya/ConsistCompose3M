@@ -185,8 +185,8 @@
   .ticker.shoot .bolt img { display:block; width:100%; height:100%; object-fit:cover; }
   .ticker.shoot:hover .bolt { animation-play-state: paused; }
   @keyframes bullet {
-    from { transform: translate3d(0,-50%,0); }
-    to   { transform: translate3d(calc(-100vw - var(--w, 300px)),-50%,0); }
+    from { transform: translate3d(0, -50%, 0); }
+    to   { transform: translate3d(calc(-100vw - 600px), -50%, 0); }
   }
 
   /* ===== 全站固定背景：一张图 ===== */
@@ -416,9 +416,9 @@
       <p>Dataset Gallery of ConsistCompose Data</p>
       <div class="hero-buttons">
         <a href="#stats" class="btn">● Explore</a>
-        <a href="paper.pdf" class="btn">📄 Paper</a>
-        <a href="https://github.com/xxx" class="btn">💻 Code</a>
-        <a href="dataset.zip" class="btn">📂 Dataset</a>
+        <a href="https://arxiv.org/abs/2511.18333" class="btn">📄 Paper</a>
+        <a href="https://huggingface.co/datasets/sensenova/ConsistCompose3M" class="btn">💻 Code</a>
+        <a href="https://huggingface.co/datasets/sensenova/ConsistCompose3M" class="btn">📂 Dataset</a>
       </div>
     </div>
   </section>
@@ -430,27 +430,36 @@
         <h2 class="section-title">Data Statistics</h2>
         <div class="stats-grid">
           <div class="card stat-card">
-            <div class="stat-title" style="color:#fb72c3">Imagination</div>
-            <div class="ring" data-color="#fb72c3" data-track="#3b3b44" data-value="37541" data-total="180000"></div>
+            <div class="stat-title" style="color:#fb72c3">Text2Image</div>
+            <div class="ring" data-color="#fb72c3" data-track="#3b3b44" data-value="2665502" data-total="3533939"></div>
           </div>
           <div class="card stat-card">
             <div class="stat-title" style="color:#5fb0ff">Multi-Reference</div>
-            <div class="ring" data-color="#5fb0ff" data-track="#3b3b44" data-value="72729" data-total="180000"></div>
+            <div class="ring" data-color="#5fb0ff" data-track="#3b3b44" data-value="790630" data-total="3533939"></div>
           </div>
           <div class="card stat-card">
-            <div class="stat-title" style="color:#a78bfa">Instruction Following</div>
-            <div class="ring" data-color="#a78bfa" data-track="#3b3b44" data-value="67958" data-total="180000"></div>
+            <div class="stat-title" style="color:#a78bfa">Single-Reference</div>
+            <div class="ring" data-color="#a78bfa" data-track="#3b3b44" data-value="77807" data-total="3533939"></div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-
-  <!-- Page: Single Image Animation (x6) 三列自适应 -->
-  <section class="snap" id="single-anim-grid">
+  <!-- Page 3: Text2Image Image Wall -->
+  <section class="snap" id="text2image">
     <div class="fullbleed">
-      <h2 class="section-title">Single Subject Animation</h2>
+      <h2 class="section-title">Layout Text to Image</h2>
+      <div class="ticker row-gap shoot demo-shoot-t2i" data-speed="200" data-gap="24"></div>
+      <div class="ticker row-gap shoot demo-shoot-t2i" data-speed="190" data-gap="24"></div>
+      <div class="ticker row-gap shoot demo-shoot-t2i" data-speed="180" data-gap="24"></div>
+    </div>
+  </section>
+
+  <!-- Page 4: Single Image Animation (x6) 三列自适应 -->
+<section class="snap" id="single-anim-grid">
+    <div class="fullbleed">
+      <h2 class="section-title">Single Subject</h2>
       <div class="oneanim-grid">
 
         <!-- 用 oneanim-item 把卡片和说明绑在一起；复制 6 次，按需替换 URL -->
@@ -584,8 +593,9 @@
 
       </div>
     </div>
-  </section>
-<!-- Page 4: Image Wall -->
+</section>
+
+<!-- Page 5: Image Wall -->
 <section class="snap" id="multiref">
   <div class="fullbleed">
     <h2 class="section-title">Single Subject Image Wall</h2>
@@ -598,10 +608,12 @@
 </section>
 
 
+
+
 <!-- Page: Double Subject Animation (x6) 三列自适应 -->
 <section class="snap" id="double-anim-grid">
   <div class="fullbleed">
-    <h2 class="section-title">Multi-subject Animation</h2>
+    <h2 class="section-title">Multi-subject</h2>
     <div class="oneanim5-grid">
 
       <!-- 卡片 1 -->
@@ -763,7 +775,7 @@
 <!-- Page 6: Four-Image Wall -->
 <section class="snap" id="multiref-x4">
   <div class="fullbleed">
-    <h2 class="section-title">Multi-subject Image Wall</h2>
+    <h2 class="section-title">Multi-subject Image Wall (FLux)</h2>
 
     <!-- 3 行射流，素材由 JS 自动注入 -->
     <div class="ticker row-gap shoot demo-shoot4" data-speed="200" data-gap="24"></div>
@@ -772,8 +784,15 @@
   </div>
 </section>
 
-
-
+  <!-- Page 8: Multi-Reference No Background -->
+  <section class="snap" id="multiref-nobg">
+    <div class="fullbleed">
+      <h2 class="section-title">Multi-subject Image Wall (Qwen)</h2>
+      <div class="ticker row-gap shoot demo-shoot-nobg" data-speed="200" data-gap="24"></div>
+      <div class="ticker row-gap shoot demo-shoot-nobg" data-speed="190" data-gap="24"></div>
+      <div class="ticker row-gap shoot demo-shoot-nobg" data-speed="180" data-gap="24"></div>
+    </div>
+  </section>
 
 </div>
 
@@ -916,9 +935,10 @@ function initShootTicker(ticker){
     const node = units[idx++ % units.length].cloneNode(true);
     node.classList.add('bolt'); lane.appendChild(node);
 
-    requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{ 
       const w = node.offsetWidth || 260;
-      const distance = ticker.clientWidth + w;
+      const REF_W = 260;
+      const distance = ticker.clientWidth + 600;
       const dur = distance / SPEED;
       node.style.setProperty('--w', w + 'px');
       node.style.animation = `bullet ${dur}s linear forwards`;
@@ -1108,6 +1128,38 @@ const DEMO_IDS_X4 = [
 '000219',
   // 按需往下加
 ];
+const MULTI_REFERENCE_NOBG = [
+  { id: '001', inputs: 3 },
+  { id: '026', inputs: 2 },
+  { id: '027', inputs: 2 },
+  { id: '018', inputs: 3 },
+  { id: '019', inputs: 3 },
+  { id: '025', inputs: 3 },
+  { id: '028', inputs: 3 },
+  { id: '030', inputs: 3 },
+  { id: '035', inputs: 3 },
+  { id: '041', inputs: 3 },
+  { id: '042', inputs: 3 },
+  { id: '044', inputs: 3 },
+  { id: '066', inputs: 2 },
+  { id: '065', inputs: 2 },
+  { id: '085', inputs: 3 },
+  { id: '090', inputs: 3 },
+  { id: '119', inputs: 3 },
+  { id: '125', inputs: 3 },
+  { id: '134', inputs: 3 },
+  { id: '370', inputs: 3 },
+  { id: '377', inputs: 3 },
+  { id: '381', inputs: 3 },
+  { id: '382', inputs: 2 },
+  { id: '384', inputs: 2 },
+  { id: '387', inputs: 2 },
+  { id: '390', inputs: 2 },
+  { id: '365', inputs: 2 },
+  { id: '362', inputs: 2 },
+  { id: '346', inputs: 3 },
+];
+
 
 /** 生成 4 张图的 bundle */
 function createBundleNode4(id){
@@ -1142,6 +1194,76 @@ function createBundleNode4(id){
   rows.forEach(initShootTicker);
 })();
 
+/* ===== Text2Image 图片墙 ===== */
+const T2I_IMGS = [
+  'sa_4110099','sa_4110138','sa_4110217','sa_4110258','sa_4110488',
+  'sa_4110608','sa_4110627','sa_4110711','sa_4110718','sa_4110953',
+  'sa_4111016','sa_4111660','sa_4111677','sa_4111685'
+];
+
+function createT2INode(name){
+  const wrap = document.createElement('div');
+  // 高度固定512对应的显示高，宽度auto保持比例
+  wrap.style.cssText = 'height:clamp(140px,24vh,260px);border-radius:16px;border:1px solid var(--border);overflow:hidden;background:#0f172a;flex-shrink:0;';
+  wrap.innerHTML = `<img src="assets/ready_to_use/${name}.jpg" alt="${name}" style="height:100%;width:auto;display:block;object-fit:cover;">`;
+  return wrap;
+}
+
+(function buildT2ITracks(){
+  const rows = Array.from(document.querySelectorAll('.ticker.demo-shoot-t2i'));
+  if(!rows.length) return;
+  rows.forEach(row => {
+    const track = document.createElement('div');
+    track.className = 'track';
+    row.appendChild(track);
+  });
+  T2I_IMGS.forEach((name, i) => {
+    const row = rows[i % rows.length];
+    row.querySelector('.track').appendChild(createT2INode(name));
+  });
+  rows.forEach(row => row.dataset.mode = 'shoot');
+  rows.forEach(initShootTicker);
+})();
+
+/* ===== Multi-Reference 无背景版（只有 img1, img2, output 3张）===== */
+function createBundleNodeNoBg(id, inputs){
+  const wrap = document.createElement('div');
+  wrap.className = 'bundle';
+  
+  const CELL_H = '200px';
+  const colors = ['#ef4444', '#22c55e', '#3b82f6']; // 红绿蓝
+  
+  let html = '';
+  for(let i = 1; i <= inputs; i++){
+    const color = colors[i-1];
+    html += `<div style="height:${CELL_H};border-radius:14px;border:3px solid ${color};overflow:hidden;background:#0f172a;flex-shrink:0;">
+      <img src="assets/multi_ref_nobg/${id}_input${i}.jpg" alt="${id} sub${i}" style="height:100%;width:auto;display:block;">
+    </div>`;
+  }
+  // output 不加颜色框
+  html += `<div style="height:${CELL_H};border-radius:14px;border:1px solid var(--border);overflow:hidden;background:#0f172a;flex-shrink:0;">
+    <img src="assets/multi_ref_nobg/${id}_output.jpg" alt="${id} output" style="height:100%;width:auto;display:block;">
+  </div>`;
+  
+  wrap.innerHTML = html;
+  return wrap;
+}
+
+(function buildNoBgTracks(){
+  const rows = Array.from(document.querySelectorAll('.ticker.demo-shoot-nobg'));
+  if(!rows.length) return;
+  rows.forEach(row => {
+    const track = document.createElement('div');
+    track.className = 'track';
+    row.appendChild(track);
+  });
+  MULTI_REFERENCE_NOBG.forEach((item, i) => {
+    const row = rows[i % rows.length];
+    row.querySelector('.track').appendChild(createBundleNodeNoBg(item.id, item.inputs));
+  });
+  rows.forEach(row => row.dataset.mode = 'shoot');
+  rows.forEach(initShootTicker);
+})();
 </script>
 </body>
 </html>
