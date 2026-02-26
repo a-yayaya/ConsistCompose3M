@@ -3,1661 +3,811 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ConsistCompose-Image — Gallery</title>
+<title>ConsistCompose3M — Dataset Gallery</title>
 <style>
-  :root{
-    --bg:#0b0f19;
-    --text:#e6e9ef;
-    --muted:#9aa3b2;
-    --card:#111827;
-    --border:#1f2937;
-    --shadow: 0 10px 30px rgba(0,0,0,.35);
-    --blue:#60a5fa; --pink:#fb72c3; --violet:#a78bfa;
-    --maxw:1200px; --radius:20px;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{
-    height:100%;
-    background:var(--bg);
-    color:var(--text);
-    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-  }
-  a{color:var(--blue); text-decoration:none}
-  a:hover{text-decoration:underline}
+/* ══════════════ TOKENS ══════════════ */
+:root {
+  --bg: #080c14;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --border: rgba(255,255,255,0.08);
+  --blue: #60a5fa; --pink: #fb72c3; --violet: #a78bfa; --green: #34d399;
+  --maxw: 1200px; --radius: 16px;
+  --shadow: 0 8px 32px rgba(0,0,0,.30);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: 'Georgia', 'Times New Roman', serif;
+  line-height: 1.7; overflow-x: hidden;
+}
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
 
-  /* ====== 整屏翻页 ====== */
-  .snap-container{
-    height:100vh; overflow-y:auto; overflow-x:hidden;
-    scroll-snap-type:y mandatory;
-    scroll-behavior:smooth;
-    position:relative; z-index:0;
-  }
-  section.snap{
-    min-height:100vh;
-    scroll-snap-align:start;
-    position:relative; z-index:0;
-    display:flex; align-items:center; justify-content:center;
-    padding:24px;
-    overflow:hidden;
-  }
-    /* 隐藏容器滚动条：Chrome/Safari/Edge */
-  .snap-container::-webkit-scrollbar { width: 0; height: 0; }
+/* ── Background (same as main.html) ── */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(96,165,250,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167,139,250,0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(251,114,195,0.04) 0%, transparent 60%),
+    url("assets/logo.png");
+  background-size: auto, auto, auto, cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: -1;
+  background: linear-gradient(180deg,
+    rgba(8,12,20,0.82) 0%, rgba(8,12,20,0.65) 40%,
+    rgba(8,12,20,0.80) 80%, rgba(8,12,20,0.95) 100%);
+}
 
-  /* 隐藏容器滚动条：Firefox */
-  .snap-container { scrollbar-width: none; }
+/* ══════════════ NAV ══════════════ */
+.topnav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px;
+  background: rgba(8,12,20,0.35);
+  backdrop-filter: blur(24px) saturate(1.5);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  border-bottom: 1px solid var(--border);
+}
+.nav-brand {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none; color: inherit; flex-shrink: 0;
+}
+.nav-brand img { width: 30px; height: 30px; border-radius: 7px; object-fit: cover; }
+.nav-brand-name { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 15px; font-weight: 700; color: #f1f5f9; display: block; }
+.nav-brand-sub  { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 11px; color: var(--muted); display: block; }
+.nav-links { display: flex; align-items: center; height: 100%; }
+.nav-link {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  padding: 0 14px; height: 100%; display: inline-flex; align-items: center;
+  font-size: 13.5px; font-weight: 500; color: #94a3b8;
+  text-decoration: none; position: relative; white-space: nowrap;
+  transition: color .2s;
+}
+.nav-link:hover { color: #e2e8f0; text-decoration: none; }
+.nav-link.active { color: #fff; font-weight: 600; }
+.nav-link.active::after {
+  content: ''; position: absolute; bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 20px; height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, var(--blue), var(--violet));
+}
+@media (max-width: 900px) { .nav-links { display: none; } .topnav { padding: 0 20px; } }
 
-  /* 隐藏容器滚动条：老 Edge/IE */
-  .snap-container { -ms-overflow-style: none; }
-  .inner{ width:100%; max-width:var(--maxw); padding:24px; }
-  .card{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    box-shadow:var(--shadow);
-  }
+/* ══════════════ SECTIONS ══════════════ */
+section {
+  padding: 100px 24px 80px;
+  display: flex; flex-direction: column;
+  align-items: center;
+}
+.sec-wrap { width: 100%; max-width: var(--maxw); }
 
-  /* ====== 统计页 ====== */
-  .stats-fullpage {
-    width: 100%;
-    max-width: var(--maxw);
-    padding: 0 24px;
-    display: flex;
-    flex-direction: column;
-  }
-  .stats-grid {
-    display: grid;
-    gap: 20px;
-    grid-template-columns: repeat(1, minmax(0,1fr));
-    flex: 1;
-  }
-  @media(min-width:900px){ .stats-grid{ grid-template-columns: repeat(3,1fr); } }
-  .stat-card {
-    padding: 32px 24px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-  }
-  .stat-title { font-weight:800; text-align:center; font-size: 17px; }
-  .ring {
-    width: min(300px, 28vw, 38vh);
-    height: min(300px, 28vw, 38vh);
-    margin: 0 auto;
-    position: relative;
-  }
-  .ring canvas { position:absolute; inset:0; }
-  .ring .center {
-    position:absolute; inset:0;
-    display:grid; place-items:center;
-    font-weight:800; font-size: clamp(22px, 2.5vw, 32px);
-    text-align: center;
-  }
-  .ring .center small {
-    display:block; color:var(--muted);
-    font-weight:600; font-size:12px; margin-top:6px;
-  }
+/* Section heading — identical to main.html */
+.sec-label {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--violet); margin-bottom: 10px;
+}
+.sec-title {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(24px, 3vw, 36px); font-weight: 700;
+  letter-spacing: -.02em; margin-bottom: 28px; color: #f1f5f9;
+  display: flex; align-items: center; gap: 12px;
+}
+.sec-title::before {
+  content: ''; flex-shrink: 0;
+  width: 6px; height: 28px; border-radius: 6px;
+  background: linear-gradient(180deg, var(--pink), var(--violet));
+}
 
-  /* ====== 样例页（可复用） ====== */
-  .gallery{display:grid; gap:18px; grid-template-columns:repeat(2,1fr)}
-  @media(min-width:900px){ .gallery{grid-template-columns:repeat(4,1fr)} }
-  .thumb{width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:16px; border:1px solid var(--border); background:#0f172a}
+/* Glass card */
+.glass {
+  background: rgba(15,23,42,0.40);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 32px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+/* Keep .card as alias */
+.card { }
+.card { background: rgba(15,23,42,0.40); backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 8px 32px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,0.05); }
 
-  /* ====== 右侧导航点 ====== */
-  .dots{position:fixed; right:16px; top:50%; transform:translateY(-50%); display:grid; gap:10px; z-index:50}
-  .dot{width:10px;height:10px;border-radius:50%; background:#334155; border:1px solid #64748b; cursor:pointer; transition:.2s}
-  .dot.active{background:#93c5fd; border-color:#93c5fd; box-shadow:0 0 0 4px rgba(147,197,253,.2)}
-  .dot:hover{transform:scale(1.12)}
+/* ══════════════ HERO ══════════════ */
+#home {
+  min-height: 100vh;
+  justify-content: center; text-align: center;
+  padding: 120px 24px 80px;
+}
+.hero-badge {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 12px; font-weight: 600; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--violet);
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-bottom: 20px;
+}
+.hero-badge::before, .hero-badge::after {
+  content: ''; display: inline-block; width: 24px; height: 1px;
+  background: var(--violet); opacity: .5;
+}
+.hero-title {
+  font-size: clamp(40px, 6vw, 76px); font-weight: 700;
+  line-height: 1.08; letter-spacing: -.02em;
+  background: linear-gradient(135deg, #f1f5f9 20%, #a78bfa 60%, #60a5fa 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: 14px;
+}
+.hero-sub {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(15px, 2vw, 19px); color: #94a3b8;
+  max-width: 620px; margin: 0 auto 36px; font-weight: 400; line-height: 1.6;
+}
+.hero-btns {
+  display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 22px; border-radius: 999px;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 14px; font-weight: 600; text-decoration: none;
+  transition: all .2s; cursor: pointer; border: none;
+}
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6, #7c3aed); color: #fff;
+  box-shadow: 0 4px 20px rgba(99,102,241,.35);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(99,102,241,.5); text-decoration: none; }
+.btn-outline {
+  background: rgba(255,255,255,0.05); color: #cbd5e1;
+  border: 1px solid var(--border); backdrop-filter: blur(8px);
+}
+.btn-outline:hover { background: rgba(255,255,255,0.10); color: #fff; border-color: rgba(255,255,255,0.15); text-decoration: none; }
 
-  /* 小标题装饰 */
-  .section-title {
-    display:flex; align-items:center; gap:10px; margin:8px 0 18px;
-    font-size:28px; font-weight:800;
-  }
-  .section-title::before{
-    content:""; width:8px; height:26px; border-radius:8px;
-    background:linear-gradient(180deg,#fb72c3,#a78bfa);
-  }
-  .fullbleed { width:100%; max-width:1200px; margin:0 auto; padding:0 24px; }
+/* ══════════════ STATS ══════════════ */
+#stats { min-height: 100vh; justify-content: center; }
+.stats-grid {
+  display: grid; gap: 20px;
+  grid-template-columns: repeat(3, 1fr);
+}
+@media (max-width: 900px) { .stats-grid { grid-template-columns: 1fr; } }
+.stat-card {
+  padding: 36px 28px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 16px;
+}
+.stat-title {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700; text-align: center; font-size: 16px;
+}
+.ring { width: min(280px, 26vw, 36vh); height: min(280px, 26vw, 36vh); margin: 0 auto; position: relative; }
+.ring canvas { position: absolute; inset: 0; }
+.ring .center {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  font-weight: 800; font-size: clamp(22px, 2.2vw, 30px); text-align: center;
+}
+.ring .center small { display: block; color: var(--muted); font-weight: 600; font-size: 12px; margin-top: 6px; }
 
-  /* ===== 普通 ticker 的基础样式（作为素材池存在） ===== */
-  .ticker { position:relative; overflow:hidden; }
-  .ticker .track{
-    display:inline-flex;
-    align-items:center;
-    gap:22px;
-    flex-wrap:nowrap;
-    white-space:nowrap;
-  }
+/* ══════════════ TICKER SECTIONS (shared) ══════════════ */
+.ticker-section { min-height: 80vh; padding: 80px 0 60px; width: 100%; }
+.ticker-section .sec-wrap { padding: 0 40px; }
+.ticker { position: relative; overflow: hidden; }
+.ticker .track { display: inline-flex; align-items: center; gap: 22px; flex-wrap: nowrap; white-space: nowrap; }
+.row-gap { margin-top: 14px; }
 
-  /* ===== tile / bundle ===== */
-  .tile{
-    border-radius:16px; border:1px solid var(--border);
-    background:#0f172a; overflow:hidden;
-    height: clamp(140px, 24vh, 260px);
-    width:  clamp(140px, 24vh, 260px);
-    transform: translateY(var(--y,0));
-  }
-  .tile img{ width:100%; height:100%; object-fit:cover; display:block; }
+/* bullet / bundle / tile */
+.tile { border-radius: 16px; border: 1px solid var(--border); background: #0f172a; overflow: hidden; height: clamp(140px,24vh,260px); width: clamp(140px,24vh,260px); }
+.tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bundle { display: flex; gap: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 16px; background: rgba(15,23,42,0.6); box-shadow: var(--shadow); }
+.bundle .cell { position: relative; width: clamp(120px,16vw,180px); aspect-ratio: 1/1; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.bundle img { width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in; }
+.badge { display: none !important; }
+.ticker.shoot .track { display: none; }
+.ticker.shoot { position: relative; overflow: hidden; height: var(--shoot-h, 260px); }
+.ticker.shoot .lane { position: relative; width: 100%; height: 100%; }
+.ticker.shoot .bolt { position: absolute; top: 50%; left: 100%; transform: translate3d(0,-50%,0); will-change: transform; backface-visibility: hidden; }
+.ticker.shoot .bolt img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.ticker.shoot:hover .bolt { animation-play-state: paused; }
+@keyframes bullet {
+  from { transform: translate3d(0,-50%,0); }
+  to   { transform: translate3d(calc(-100vw - 600px),-50%,0); }
+}
+.tile img:hover, .bundle img:hover { transform: scale(1.05); transition: transform .25s ease; }
+#multiref-x4 .bundle { background: rgba(30,41,59,0.7); border: 1px solid #475569; }
 
-  .bundle{
-    display:flex;
-    gap:12px;
-    padding:12px;
-    border:1px solid var(--border);
-    border-radius:16px;
-    background:#0f172a;
-    box-shadow:var(--shadow);
-    width:auto;
-    height:auto;
-  }
-  .bundle .cell{
-    position:relative;
-    width: clamp(120px, 16vw, 180px);
-    aspect-ratio: 1 / 1;
-    border:1px solid var(--border);
-    border-radius:14px;
-    overflow:hidden;
-  }
-  .bundle img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:block;
-    background:#0f172a;
-    cursor:zoom-in;
-  }
+/* ══════════════ ANIMATION CARDS ══════════════ */
+.anim-section { min-height: 100vh; padding: 80px 0 60px; width: 100%; }
+.anim-section .sec-wrap { padding: 0 40px; }
 
-  .badge{ display:none !important; }
-  .row-gap { margin-top: 16px; }
-
-  /* ===== Lightbox ===== */
-  .lb{
-    position:fixed; inset:0; background:rgba(0,0,0,.75);
-    display:none; align-items:center; justify-content:center;
-    z-index:100; padding:24px;
-  }
-  .lb.open{ display:flex; }
-  .lb img{
-    max-width:min(92vw,1400px);
-    max-height:86vh;
-    border-radius:16px; border:1px solid var(--border); background:#0f172a;
-    box-shadow:0 20px 60px rgba(0,0,0,.5);
-  }
-  .lb-close{
-    position:fixed; top:16px; right:20px; font-size:28px; line-height:1;
-    color:#e6e9ef; cursor:pointer; user-select:none;
-    background:rgba(17,24,39,.6); border:1px solid var(--border);
-    padding:6px 12px; border-radius:12px;
-  }
-
-  /* ===== HERO ===== */
-  .hero-content { position:relative; z-index:1; color:#fff; text-align:center; }
-  .hero-content h1{ font-size:clamp(36px,6vw,72px); line-height:1.05; font-weight:900; letter-spacing:.3px; }
-  .hero-content p{ margin-top:12px; font-size:clamp(16px,2.2vw,22px); color:#cbd5e1; }
-  .hero-buttons{ margin-top:20px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
-  .hero-buttons .btn{
-    display:inline-flex; align-items:center; gap:8px; padding:10px 16px;
-    border:1px solid var(--border, #334155); border-radius:999px;
-    background:#0f172a; color:#fff; text-decoration:none;
-  }
-  .hero-buttons .btn:hover{ background:#111827; }
-
-  .snap.hero-landing{ min-height:100vh; padding:0; margin:0; position:relative; isolation:isolate; overflow:hidden; z-index:0; }
-  .hero-logo{ width:88px; height:88px; border-radius:18px; display:inline-block; margin-bottom:16px; }
-
-  /* ===== 悬停放大 ===== */
-  .tile img:hover,
-  .bundle img:hover {
-    transform: scale(1.05);
-    transition: transform 0.25s ease;
-  }
-
-  /* ===== 子弹流：隐藏素材轨道 + 轨道/弹体样式 ===== */
-  .ticker.shoot .track{ display:none; }  /* 素材池只用于克隆，不显示 */
-  .ticker.shoot { position: relative; overflow: hidden; height: var(--shoot-h, 260px); }
-  .ticker.shoot .lane { position: relative; width: 100%; height: 100%; }
-  .ticker.shoot .bolt {
-    position: absolute; top: 50%; left: 100%;
-    transform: translate3d(0,-50%,0); will-change: transform; backface-visibility: hidden;
-  }
-  .ticker.shoot .bolt img { display:block; width:100%; height:100%; object-fit:cover; }
-  .ticker.shoot:hover .bolt { animation-play-state: paused; }
-  @keyframes bullet {
-    from { transform: translate3d(0, -50%, 0); }
-    to   { transform: translate3d(calc(-100vw - 600px), -50%, 0); }
-  }
-
-  /* ===== 全站固定背景：一张图 ===== */
-  body{ background:transparent; }
-  body::before{
-    content:""; position:fixed; inset:0; z-index:-1;
-    background-image:
-      linear-gradient(to top, rgba(10,10,20,0.85), rgba(10,10,20,0.15)),
-      url("assets/logo.png");
-    background-size:cover; background-position:center; background-repeat:no-repeat;
-  }
-
-  /* ====== compose-demo（滑动版）命名空间：cd_* ====== */
-  .compose-demo{ max-width:1200px; margin:0 auto; padding:0 24px; }
-  .compose-stage{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-  .compose-pane{
-    position:relative; height: clamp(280px, 52vh, 420px);
-    border:1px solid var(--border); border-radius:16px; overflow:hidden;
-    background:#0f172a; box-shadow:var(--shadow);
-  }
-  .compose-layer{ position:absolute; inset:0; background-size:cover; background-position:center; background-repeat:no-repeat; opacity:0; transform:translateX(0); }
-  .compose-stage{ --dur:12s; }
-
-  .compose-pane.left  .bg     { background-image:var(--bg);     animation:cd_L_bg    var(--dur) ease-in-out infinite; }
-  .compose-pane.left  .bgbox  { background-image:var(--bgbox);  animation:cd_L_bgbox var(--dur) ease-in-out infinite; }
-  .compose-pane.left  .output { background-image:var(--out);    animation:cd_L_out   var(--dur) ease-in-out infinite; }
-  .compose-pane.right .bgbox  { background-image:var(--bgbox);  animation:cd_R_bgbox var(--dur) ease-in-out infinite; }
-  .compose-pane.right .object { background-image:var(--obj);    animation:cd_R_obj   var(--dur) ease-in-out infinite; }
-  .compose-pane.right .outbox { background-image:var(--outbox); animation:cd_R_outbx var(--dur) ease-in-out infinite; }
-
-  @keyframes cd_L_bg{0%{opacity:1}18%{opacity:1}28%{opacity:0}100%{opacity:0}}
-  @keyframes cd_L_bgbox{0%{opacity:0}18%{opacity:0}22%{opacity:1}42%{opacity:1}52%{opacity:0}100%{opacity:0}}
-  @keyframes cd_L_out{0%{opacity:0}48%{opacity:0}60%{opacity:1}90%{opacity:1}100%{opacity:0}}
-  @keyframes cd_R_bgbox{
-    0%{opacity:0;transform:translateX(24px)} 10%{opacity:1;transform:translateX(0)}
-    28%{opacity:1} 34%{opacity:0} 100%{opacity:0}
-  }
-  @keyframes cd_R_obj{
-    0%{opacity:0;transform:translateX(24px)} 26%{opacity:0;transform:translateX(24px)}
-    32%{opacity:1;transform:translateX(0)} 48%{opacity:1;transform:translateX(0)}
-    60%{opacity:0;transform:translateX(-120%)} 100%{opacity:0;transform:translateX(-120%)}
-  }
-  @keyframes cd_R_outbx{
-    0%{opacity:0;transform:translateX(24px)} 58%{opacity:0;transform:translateX(24px)}
-    68%{opacity:1;transform:translateX(0)} 90%{opacity:1} 100%{opacity:0}
-  }
-  .compose-caption{ display:flex; justify-content:space-between; align-items:center; font-weight:700; margin:10px 2px 0; color:var(--muted); font-size:.92rem; }
-
-  /* ====== s1：四步淡入版 命名空间：s1_* ====== */
-  .s1-stage{ --dur:12s; display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-  .s1-pane{
-    position:relative; height:clamp(280px,52vh,420px);
-    border:1px solid var(--border); border-radius:16px; overflow:hidden;
-    background:#0f172a; box-shadow:var(--shadow);
-  }
-  .s1-layer{ position:absolute; inset:0; background-size:cover; background-position:center; opacity:0; will-change:opacity; }
-
-  .s1-pane.left  .bg    { background-image:var(--bg);    animation:s1_L_bg    var(--dur) ease-in-out infinite; }
-  .s1-pane.left  .bgbox { background-image:var(--bgbox); animation:s1_L_bgbox var(--dur) ease-in-out infinite; }
-  .s1-pane.left  .out   { background-image:var(--out);   animation:s1_L_out   var(--dur) ease-in-out infinite; }
-
-  .s1-pane.right .sub         { background-image:var(--sub);   animation:s1_R_sub    var(--dur) ease-in-out infinite; }
-  .s1-pane.right .bgboxghost  { background-image:var(--bgbox); animation:s1_R_bgbox  var(--dur) ease-in-out infinite; }
-  .s1-pane.right .outbx       { background-image:var(--outbx); animation:s1_R_outbx  var(--dur) ease-in-out infinite; }
-
-  @keyframes s1_L_bg{0%{opacity:0}10%{opacity:1}30%{opacity:1}34%{opacity:0}100%{opacity:0}}
-  @keyframes s1_L_bgbox{0%{opacity:0}36%{opacity:0}42%{opacity:1}54%{opacity:1}58%{opacity:0}100%{opacity:0}}
-  @keyframes s1_L_out{0%{opacity:0}58%{opacity:1}90%{opacity:1}100%{opacity:0}}
-  @keyframes s1_R_sub{0%{opacity:1}30%{opacity:1}34%{opacity:0}100%{opacity:0}}
-  @keyframes s1_R_bgbox{0%{opacity:0}26%{opacity:0}30%{opacity:1}36%{opacity:1}40%{opacity:0}100%{opacity:0}}
-  @keyframes s1_R_outbx{0%{opacity:0}70%{opacity:0}75%{opacity:1}95%{opacity:1}100%{opacity:0}}
-  .s1-caption{ display:flex; justify-content:space-between; color:var(--muted); font-weight:700; margin:10px 2px 0; font-size:.92rem; }
-
-  /* ====== 单图位动画 oneanim（淡入、三列自适应、卡片限制尺寸） ====== */
-  .oneanim-grid{
-    display:grid; gap:16px;
-    grid-template-columns:repeat(3, minmax(0,1fr)); align-items:start;
-  }
-  @media (max-width: 900px){ .oneanim-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
-  @media (max-width: 640px){ .oneanim-grid{ grid-template-columns:1fr; } }
-
-  .oneanim-item{ display:flex; flex-direction:column; gap:8px; align-items:center; }
-
-  .oneanim-card{
-    --dur:12s;
-    position:relative;
-    width:100%; max-width:320px;            /* 控制每张卡片的最大尺寸 */
-    aspect-ratio:1/1;
-    border:1px solid var(--border); border-radius:16px; overflow:hidden;
-    background:#0f172a; box-shadow:var(--shadow);
-  }
-  @media (max-width:1200px){ .oneanim-card{ max-width:300px; } }
-  @media (max-width:900px){  .oneanim-card{ max-width:280px; } }
-  @media (max-width:640px){  .oneanim-card{ max-width:min(92vw,360px); } }
-
-  .oneanim-layer{
-    position:absolute; inset:0; background-size:cover; background-position:center; background-repeat:no-repeat;
-    opacity:0; will-change:opacity;
-  }
-  .oneanim-card .step1-sub  { background-image:var(--sub);   animation:oa_step1 var(--dur) ease-in-out infinite; }
-  .oneanim-card .step2-bg   { background-image:var(--bg);    animation:oa_step2 var(--dur) ease-in-out infinite; }
-  .oneanim-card .step3-box  { background-image:var(--bgbox); animation:oa_step3 var(--dur) ease-in-out infinite; }
-  .oneanim-card .step4-out  { background-image:var(--out);   animation:oa_step4 var(--dur) ease-in-out infinite; }
-
-/* 让每个步骤之间有重叠，避免空隙 */
-/* 让下一张图片提前开始显示，上一张延迟消失 */
+.oneanim-grid { display: grid; gap: 20px; grid-template-columns: repeat(3, minmax(0,1fr)); align-items: start; }
+@media (max-width: 900px) { .oneanim-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width: 600px) { .oneanim-grid { grid-template-columns: 1fr; } }
+.oneanim-item { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.oneanim-card { --dur: 12s; position: relative; width: 100%; max-width: 320px; aspect-ratio: 1/1; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; background: #0f172a; box-shadow: var(--shadow); }
+@media (max-width:1200px){ .oneanim-card{ max-width:300px; } }
+@media (max-width:900px){  .oneanim-card{ max-width:280px; } }
+@media (max-width:640px){  .oneanim-card{ max-width:min(92vw,360px); } }
+.oneanim-layer { position: absolute; inset: 0; background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0; will-change: opacity; }
+.oneanim-card .step1-sub  { background-image: var(--sub);   animation: oa_step1 var(--dur) ease-in-out infinite; }
+.oneanim-card .step2-bg   { background-image: var(--bg);    animation: oa_step2 var(--dur) ease-in-out infinite; }
+.oneanim-card .step3-box  { background-image: var(--bgbox); animation: oa_step3 var(--dur) ease-in-out infinite; }
+.oneanim-card .step4-out  { background-image: var(--out);   animation: oa_step4 var(--dur) ease-in-out infinite; }
 @keyframes oa_step1{0%{opacity:1}22%{opacity:1}28%{opacity:0}100%{opacity:0}}
 @keyframes oa_step2{0%{opacity:0}20%{opacity:0}25%{opacity:1}50%{opacity:1}56%{opacity:0}100%{opacity:0}}
 @keyframes oa_step3{0%{opacity:0}48%{opacity:0}53%{opacity:1}75%{opacity:1}81%{opacity:0}100%{opacity:0}}
 @keyframes oa_step4{0%{opacity:0}73%{opacity:0}78%{opacity:1}98%{opacity:1}100%{opacity:1}}
+.oneanim-caption { font-family: ui-sans-serif, system-ui, sans-serif; text-align: center; color: var(--muted); font-weight: 600; font-size: 13px; }
+.oneanim-caption span { transition: color .25s, text-shadow .25s; }
+.oneanim-caption span.active { color: var(--blue); text-shadow: 0 0 10px rgba(96,165,250,.35); }
 
-  .oneanim-caption{ margin:0; text-align:center; color:var(--muted); font-weight:600; font-size:.92rem; }
-  /* caption 高亮 */
-  .oneanim-caption { margin:0; text-align:center; color:var(--muted); font-weight:600; font-size:.92rem; }
-  .oneanim-caption span{ transition:color .25s ease, text-shadow .25s ease; }
-  .oneanim-caption span.active{
-    color: var(--blue);
-    text-shadow: 0 0 10px rgba(96,165,250,.35);
-}
-/* 专门给第 5 页的四联图 bundle 改背景色 */
-#multiref-x4 .bundle {
-  background: #1e293b;  /* 比 #0f172a 稍微亮一点 */
-  border: 1px solid #475569;  /* 给一点描边，增强分隔 */
-}
-
-
-/* ====== 双 Subject 5 步动画（Subject1→Subject2→Background→ROI→Output） ====== */
-.oneanim5-grid{
-  display:grid; gap:16px;
-  grid-template-columns:repeat(3, minmax(0,1fr)); align-items:start;
-}
-@media (max-width: 900px){ .oneanim5-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
-@media (max-width: 640px){ .oneanim5-grid{ grid-template-columns:1fr; } }
-
-.oneanim5-item{ display:flex; flex-direction:column; gap:8px; align-items:center; }
-
-/* 单卡样式与 .oneanim-card 一致，另起类名以免互相影响 */
-.oneanim5-card{
-  --dur:12s;
-  position:relative;
-  width:100%; max-width:320px;
-  aspect-ratio:1/1;
-  border:1px solid var(--border); border-radius:16px; overflow:hidden;
-  background:#0f172a; box-shadow:var(--shadow);
-}
+.oneanim5-grid { display: grid; gap: 20px; grid-template-columns: repeat(3, minmax(0,1fr)); align-items: start; }
+@media (max-width: 900px) { .oneanim5-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width: 600px) { .oneanim5-grid { grid-template-columns: 1fr; } }
+.oneanim5-item { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.oneanim5-card { --dur: 12s; position: relative; width: 100%; max-width: 320px; aspect-ratio: 1/1; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; background: #0f172a; box-shadow: var(--shadow); }
 @media (max-width:1200px){ .oneanim5-card{ max-width:300px; } }
 @media (max-width:900px){  .oneanim5-card{ max-width:280px; } }
 @media (max-width:640px){  .oneanim5-card{ max-width:min(92vw,360px); } }
+.oneanim5-layer { position: absolute; inset: 0; background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0; will-change: opacity; }
+.oneanim5-card .step1-sub1 { background-image: var(--sub1); animation: oa5_step1 var(--dur) ease-in-out infinite; }
+.oneanim5-card .step2-sub2 { background-image: var(--sub2); animation: oa5_step2 var(--dur) ease-in-out infinite; }
+.oneanim5-card .step3-bg   { background-image: var(--bg);   animation: oa5_step3 var(--dur) ease-in-out infinite; }
+.oneanim5-card .step4-box  { background-image: var(--bgbox);animation: oa5_step4 var(--dur) ease-in-out infinite; }
+.oneanim5-card .step5-out  { background-image: var(--out);  animation: oa5_step5 var(--dur) ease-in-out infinite; }
+@keyframes oa5_step1{0%{opacity:1}18%{opacity:1}23%{opacity:0}100%{opacity:0}}
+@keyframes oa5_step2{0%{opacity:0}16%{opacity:0}22%{opacity:1}38%{opacity:1}43%{opacity:0}100%{opacity:0}}
+@keyframes oa5_step3{0%{opacity:0}36%{opacity:0}42%{opacity:1}60%{opacity:1}63%{opacity:0}100%{opacity:0}}
+@keyframes oa5_step4{0%{opacity:0}58%{opacity:0}62%{opacity:1}80%{opacity:1}84%{opacity:0}100%{opacity:0}}
+@keyframes oa5_step5{0%{opacity:0}80%{opacity:0}83%{opacity:1}100%{opacity:1}}
+.oneanim5-caption { font-family: ui-sans-serif, system-ui, sans-serif; text-align: center; color: var(--muted); font-weight: 600; font-size: 13px; }
+.oneanim5-caption span { transition: color .25s, text-shadow .25s; }
+.oneanim5-caption span.active { color: var(--blue); text-shadow: 0 0 10px rgba(96,165,250,.35); }
 
-.oneanim5-layer{
-  position:absolute; inset:0; background-size:cover; background-position:center; background-repeat:no-repeat;
-  opacity:0; will-change:opacity;
+/* ══════════════ BIBTEX ══════════════ */
+#bibtex {
+  min-height: 100vh; justify-content: space-between;
+  padding: 80px 24px 0;
 }
-
-/* 5 层绑定：sub1 / sub2 / bg / box / out */
-.oneanim5-card .step1-sub1 { background-image:var(--sub1); animation:oa5_step1 var(--dur) ease-in-out infinite; }
-.oneanim5-card .step2-sub2 { background-image:var(--sub2); animation:oa5_step2 var(--dur) ease-in-out infinite; }
-.oneanim5-card .step3-bg   { background-image:var(--bg);   animation:oa5_step3 var(--dur) ease-in-out infinite; }
-.oneanim5-card .step4-box  { background-image:var(--bgbox);animation:oa5_step4 var(--dur) ease-in-out infinite; }
-.oneanim5-card .step5-out  { background-image:var(--out);  animation:oa5_step5 var(--dur) ease-in-out infinite; }
-
-@keyframes oa5_step1{
-  0%{opacity:1}
-  18%{opacity:1}    /* 保持到 20% */
-  23%{opacity:0}    /* 20→26 淡出(6%) */
-  100%{opacity:0}
+.bibtex-card { padding: 32px 36px; position: relative; width: 100%; max-width: 860px; }
+.bibtex-sub {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 14px; color: var(--muted); margin-bottom: 20px;
 }
-@keyframes oa5_step2{
-  0%{opacity:0}
-  16%{opacity:0}    /* 比上一步淡出起点(20%) 早 2% 开始淡入 */
-  22%{opacity:1}    /* 完全亮起，和 step1 的 24→26 尾巴重叠 2% */
-  38%{opacity:1}    /* 保持 */
-  43%{opacity:0}    /* 44→50 淡出(6%) */
-  100%{opacity:0}
+.bibtex-wrap { position: relative; }
+.bibtex-pre {
+  background: rgba(5,8,18,0.60); border: 1px solid var(--border);
+  border-radius: 14px; padding: 22px 26px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13.5px; line-height: 1.75; color: #e2e8f0;
+  white-space: pre-wrap; word-break: break-word; overflow: hidden;
 }
-@keyframes oa5_step3{
-  0%{opacity:0}
-  36%{opacity:0}    /* 比 step2 淡出起点(44%) 早 2% 淡入 */
-  42%{opacity:1}    /* 与 step2 尾巴 48→50 重叠 2% */
-  60%{opacity:1}
-  63%{opacity:0}
-  100%{opacity:0}
-}
-@keyframes oa5_step4{
-  0%{opacity:0}
-  58%{opacity:0}    /* 比 step3 淡出起点(68%) 早 2% 淡入 */
-  62%{opacity:1}    /* 与 step3 尾巴 72→74 重叠 2% */
-  80%{opacity:1}
-  84%{opacity:0}
-  100%{opacity:0}
-}
-@keyframes oa5_step5{
-  0%{opacity:0}
-  80%{opacity:0}    /* 比 step4 淡出起点(92%) 早 2% 淡入 */
-  83%{opacity:1}    /* 与 step4 尾巴 96→98 重叠 2% */
-  100%{opacity:1}   /* 收尾保持 */
-}
-
-
-
-.oneanim5-caption{
-  margin:0; text-align:center; color:var(--muted); font-weight:600; font-size:.92rem;
-}
-.oneanim5-caption span{ transition:color .25s ease, text-shadow .25s ease; }
-.oneanim5-caption span.active{
-  color: var(--blue);
-  text-shadow: 0 0 10px rgba(96,165,250,.35);
-}
-/* ====== 顶部导航栏 ====== */
-  .topnav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 200;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 40px;
-    height: 58px;
-    background: rgba(11, 15, 25, 0.35);
-    backdrop-filter: blur(24px) saturate(1.5);
-    -webkit-backdrop-filter: blur(24px) saturate(1.5);
-    border-bottom: 1px solid rgba(255,255,255,0.07);
-  }
-  .topnav-brand {
-    display: flex;
-    align-items: center;
-    gap: 11px;
-    text-decoration: none;
-    flex-shrink: 0;
-    cursor: pointer;
-  }
-  .topnav-brand-logo {
-    width: 34px; height: 34px;
-    border-radius: 8px;
-    object-fit: cover;
-  }
-  .topnav-brand-text {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.2;
-  }
-  .topnav-brand-name {
-    font-size: 15px;
-    font-weight: 700;
-    color: #f1f5f9;
-    letter-spacing: .2px;
-  }
-  .topnav-brand-sub {
-    font-size: 11px;
-    color: #64748b;
-    font-weight: 500;
-  }
-  .topnav-inner {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    height: 100%;
-  }
-  .topnav-item {
-    display: inline-flex;
-    align-items: center;
-    height: 100%;
-    padding: 0 16px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #94a3b8;
-    cursor: pointer;
-    border: none;
-    background: transparent;
-    transition: color .2s;
-    text-decoration: none;
-    position: relative;
-    white-space: nowrap;
-  }
-  .topnav-item:hover {
-    color: #e2e8f0;
-    text-decoration: none;
-  }
-  .topnav-item.active {
-    color: #fff;
-    font-weight: 600;
-  }
-  .topnav-item.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 50%;
-    transform: translateX(-50%);
-    width: 22px; height: 2px;
-    border-radius: 2px;
-    background: linear-gradient(90deg, #60a5fa, #a78bfa);
-  }
-  /* 第一个 active 项加边框高亮（对应参考图的 Home 胶囊） */
-  .topnav-item:first-child.active {
-    border: 1px solid rgba(148,163,184,0.4);
-    border-radius: 6px;
-    padding: 4px 14px;
-    height: auto;
-  }
-  .topnav-item:first-child.active::after { display: none; }
-  .topnav-sep { display: none; }
-
-  /* ====== card 玻璃拟态 ====== */
-  .card {
-    background: rgba(17, 24, 39, 0.35) !important;
-    backdrop-filter: blur(24px) saturate(1.5);
-    -webkit-backdrop-filter: blur(24px) saturate(1.5);
-    border: 1px solid rgba(255,255,255,0.10) !important;
-    box-shadow: 0 8px 32px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,0.07) !important;
-  }
-  /* Stats 外层无卡片，BibTeX 外层大 card：更通透 */
-  #bibtex .card {
-    background: rgba(15, 20, 35, 0.28) !important;
-  }
-  /* stat-card 内嵌小卡片 */
-  .stat-card.card {
-    background: rgba(8, 12, 22, 0.40) !important;
-  }
-
-  /* BibTeX 页：纵向布局，bibtex卡片居中，footer 贴底 */
-  #bibtex {
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 60px 0 0;
-    gap: 0;
-  }
-  #bibtex .inner {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 100%;
-    padding: 24px 24px;
-  }
-  #bibtex .inner > .card {
-    width: 100%;
-    max-width: var(--maxw);
-  }
-  #bibtex .site-footer {
-    width: 100%;
-    flex-shrink: 0;
-  }
-  .site-footer {
-    flex-shrink: 0;
-    padding: 24px 40px;
-    border-top: 1px solid rgba(255,255,255,0.07);
-    background: transparent;
-  }
-  .footer-inner {
-    display: flex;
-    gap: 40px;
-    align-items: flex-start;
-    max-width: var(--maxw);
-    margin: 0 auto;
-  }
-  .footer-left {
-    flex: 1;
-    min-width: 0;
-  }
-  .footer-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: #f1f5f9;
-    margin-bottom: 6px;
-  }
-  .footer-desc {
-    font-size: 13px;
-    color: #64748b;
-    margin-bottom: 16px;
-    line-height: 1.5;
-  }
-  .footer-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  .footer-btn {
-    display: inline-flex;
-    align-items: center;
-    padding: 6px 18px;
-    border-radius: 999px;
-    border: 1px solid rgba(148,163,184,0.3);
-    background: rgba(255,255,255,0.04);
-    color: #94a3b8;
-    font-size: 13px;
-    font-weight: 500;
-    text-decoration: none;
-    transition: color .2s, border-color .2s, background .2s;
-  }
-  .footer-btn:hover {
-    color: #e2e8f0;
-    border-color: rgba(148,163,184,0.5);
-    background: rgba(255,255,255,0.08);
-    text-decoration: none;
-  }
-  .footer-notes {
-    width: 340px;
-    flex-shrink: 0;
-    padding: 20px 22px !important;
-    background: rgba(17,24,39,0.40) !important;
-  }
-  .footer-notes-title {
-    font-size: 15px;
-    font-weight: 700;
-    color: #e2e8f0;
-    margin-bottom: 8px;
-  }
-  .footer-notes-body {
-    font-size: 13px;
-    color: #64748b;
-    line-height: 1.6;
-  }
-  @media (max-width: 700px) {
-    .footer-inner { flex-direction: column; }
-    .footer-notes { width: 100%; }
-  }
-.copy-btn {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 11px;
-  font-size: 12px;
-  font-weight: 500;
-  border-radius: 7px;
+.bibtex-copy {
+  position: absolute; top: 14px; right: 14px;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 7px;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 12px; font-weight: 500;
   border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(30, 41, 59, 0.75);
-  color: #94a3b8;
-  cursor: pointer;
-  transition: color .15s, background .15s, border-color .15s, opacity .15s;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  opacity: 0;
-  letter-spacing: .01em;
+  background: rgba(30,41,59,0.80); color: #94a3b8;
+  cursor: pointer; opacity: 0;
+  transition: all .15s; backdrop-filter: blur(8px);
 }
-/* 悬停代码块时才显示 */
-#bibtex .card:hover .copy-btn,
-.copy-btn:focus {
-  opacity: 1;
+.bibtex-wrap:hover .bibtex-copy { opacity: 1; }
+.bibtex-copy:hover { background: rgba(51,65,85,0.9); color: #e2e8f0; border-color: rgba(255,255,255,0.2); }
+.bibtex-copy.copied { background: rgba(34,197,94,0.15); border-color: rgba(34,197,94,0.4); color: #4ade80; opacity: 1; }
+
+/* ══════════════ LIGHTBOX ══════════════ */
+.lb { position: fixed; inset: 0; background: rgba(0,0,0,.80); display: none; align-items: center; justify-content: center; z-index: 300; padding: 24px; }
+.lb.open { display: flex; }
+.lb img { max-width: min(92vw,1400px); max-height: 86vh; border-radius: 16px; border: 1px solid var(--border); background: #0f172a; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+.lb-close { position: fixed; top: 16px; right: 20px; font-size: 28px; line-height: 1; color: #e6e9ef; cursor: pointer; user-select: none; background: rgba(17,24,39,.6); border: 1px solid var(--border); padding: 6px 12px; border-radius: 12px; z-index: 301; }
+
+/* ══════════════ FOOTER ══════════════ */
+.site-footer {
+  width: 100%; flex-shrink: 0;
+  padding: 24px 48px;
+  border-top: 1px solid var(--border);
+  background: transparent;
+  display: flex; align-items: flex-start; gap: 40px;
+  flex-wrap: wrap;
 }
-.copy-btn::before {
-  content: '';
-  display: inline-block;
-  width: 13px; height: 13px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='13' height='13' rx='2'/%3E%3Cpath d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'/%3E%3C/svg%3E");
-  background-size: contain;
-  background-repeat: no-repeat;
-  flex-shrink: 0;
+.footer-left { flex: 1; min-width: 0; }
+.footer-title { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 15px; font-weight: 700; color: #f1f5f9; margin-bottom: 5px; }
+.footer-desc  { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13px; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+.footer-links { display: flex; flex-wrap: wrap; gap: 10px; }
+.footer-btn {
+  display: inline-flex; align-items: center; padding: 6px 18px;
+  border-radius: 999px; border: 1px solid rgba(148,163,184,0.3);
+  background: rgba(255,255,255,0.04); color: #94a3b8;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 13px; font-weight: 500; text-decoration: none;
+  transition: color .2s, border-color .2s, background .2s;
 }
-.copy-btn:hover {
-  background: rgba(51, 65, 85, 0.90);
-  border-color: rgba(255,255,255,0.20);
-  color: #e2e8f0;
-  opacity: 1;
-}
-.copy-btn.copied {
-  background: rgba(34, 197, 94, 0.12);
-  border-color: rgba(34, 197, 94, 0.35);
-  color: #4ade80;
-  opacity: 1;
-}
-.copy-btn.copied::before {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234ade80' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
-}
+.footer-btn:hover { color: #e2e8f0; border-color: rgba(148,163,184,0.5); background: rgba(255,255,255,0.08); text-decoration: none; }
+.footer-notes { width: 320px; flex-shrink: 0; padding: 18px 22px; }
+.footer-notes-title { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 700; color: #e2e8f0; margin-bottom: 8px; }
+.footer-notes-body  { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13px; color: var(--muted); line-height: 1.6; }
+@media (max-width: 700px) { .site-footer { flex-direction: column; padding: 20px 24px; } .footer-notes { width: 100%; } }
+
+/* ══════════════ SCROLL REVEAL ══════════════ */
+.reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* Section divider */
+.sec-divider { width: 100%; max-width: var(--maxw); height: 1px; background: var(--border); margin: 0 auto; }
 </style>
 </head>
-
 <body>
 
-<!-- 顶部导航 -->
-<nav class="topnav" id="topnav">
-  <!-- 左侧 Logo + 标题 -->
-  <a class="topnav-brand" data-section="0" href="#home">
-    <img src="assets/logo.png" alt="Logo" class="topnav-brand-logo">
-    <div class="topnav-brand-text">
-      <span class="topnav-brand-name">ConsistCompose3M</span>
-      <span class="topnav-brand-sub">Dataset Gallery</span>
-    </div>
-  </a>
-  <!-- 右侧导航链接 -->
-  <div class="topnav-inner">
-    <a class="topnav-item" data-section="0" href="#home">Home</a>
-    <a class="topnav-item" data-section="1" href="#stats">Statistics</a>
-    <a class="topnav-item" data-section="2" href="#text2image">Text2Image</a>
-    <a class="topnav-item" data-section="3" href="#single-anim-grid">Single Subject</a>
-    <a class="topnav-item" data-section="4" href="#multiref">Single Wall</a>
-    <a class="topnav-item" data-section="5" href="#double-anim-grid">Multi-subject</a>
-    <a class="topnav-item" data-section="6" href="#multiref-x4">Multi Wall (FLUX)</a>
-    <a class="topnav-item" data-section="7" href="#multiref-nobg">Multi Wall (Qwen)</a>
-    <a class="topnav-item" data-section="8" href="#bibtex">BibTeX</a>
-  </div>
-</nav>
-
-<!-- Lightbox -->
+<!-- ══════════ LIGHTBOX ══════════ -->
 <div class="lb" id="lb" aria-hidden="true">
   <img id="lb-img" alt="">
   <div class="lb-close" id="lb-close">×</div>
 </div>
 
-<div class="snap-container" id="snapper">
-  <!-- Hero Section -->
-  <section class="snap hero-landing" id="home">
-    <div class="hero-content">
-      <img src="assets/logo.png" alt="Logo" class="hero-logo">
-      <h1>ConsistCompose3M</h1>
-      <p>Dataset Gallery of ConsistCompose3M</p>
-      <div class="hero-buttons">
-        <a href="#stats" class="btn">● Explore</a>
-        <a href="https://arxiv.org/abs/2511.18333" class="btn">📄 Paper</a>
-        <a href="https://huggingface.co/sensenova/ConsistCompose-BAGEL-7B-MoT" class="btn">🤗 Model</a>
-        <a href="https://github.com/OpenSenseNova/ConsistCompose" class="btn">💻 Code</a>
-        <a href="https://huggingface.co/datasets/sensenova/ConsistCompose3M" class="btn">📂 Dataset</a>
-        <a href="#bibtex" class="btn">📑 BibTeX</a>
-      </div>
+<!-- ══════════ NAV ══════════ -->
+<nav class="topnav" id="topnav">
+  <a class="nav-brand" href="#home">
+    <img src="assets/logo.png" alt="Logo">
+    <div>
+      <span class="nav-brand-name">ConsistCompose3M</span>
+      <span class="nav-brand-sub">Dataset Gallery</span>
     </div>
-  </section>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="#home">Home</a>
+    <a class="nav-link" href="#stats">Statistics</a>
+    <a class="nav-link" href="#text2image">Text2Image</a>
+    <a class="nav-link" href="#single-anim-grid">Single Subject</a>
+    <a class="nav-link" href="#multiref">Single Wall</a>
+    <a class="nav-link" href="#double-anim-grid">Multi-subject</a>
+    <a class="nav-link" href="#multiref-x4">Multi Wall (FLUX)</a>
+    <a class="nav-link" href="#multiref-nobg">Multi Wall (Qwen)</a>
+    <a class="nav-link" href="#bibtex">BibTeX</a>
+  </div>
+</nav>
 
-  <!-- Page 2: STATS -->
-  <section class="snap" id="stats">
-    <div class="stats-fullpage">
-      <h2 class="section-title" style="margin-bottom:24px;">Data Statistics</h2>
-      <div class="stats-grid">
-        <div class="card stat-card">
-          <div class="stat-title" style="color:#fb72c3">Text2Image</div>
-          <div class="ring" data-color="#fb72c3" data-track="#3b3b44" data-value="2665502" data-total="3533939"></div>
-        </div>
-        <div class="card stat-card">
-          <div class="stat-title" style="color:#a78bfa">Single-Reference</div>
-          <div class="ring" data-color="#a78bfa" data-track="#3b3b44" data-value="77807" data-total="3533939"></div>
-        </div>
-        <div class="card stat-card">
-          <div class="stat-title" style="color:#5fb0ff">Multi-Reference</div>
-          <div class="ring" data-color="#5fb0ff" data-track="#3b3b44" data-value="790630" data-total="3533939"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Page 3: Text2Image Image Wall -->
-  <section class="snap" id="text2image">
-    <div class="fullbleed">
-      <h2 class="section-title">Layout Text to Image</h2>
-      <div class="ticker row-gap shoot demo-shoot-t2i" data-speed="200" data-gap="24"></div>
-      <div class="ticker row-gap shoot demo-shoot-t2i" data-speed="190" data-gap="24"></div>
-      <div class="ticker row-gap shoot demo-shoot-t2i" data-speed="180" data-gap="24"></div>
-    </div>
-  </section>
-
-  <!-- Page 4: Single Image Animation (x6) 三列自适应 -->
-<section class="snap" id="single-anim-grid">
-    <div class="fullbleed">
-      <h2 class="section-title">Single Subject</h2>
-      <div class="oneanim-grid">
-
-        <!-- 用 oneanim-item 把卡片和说明绑在一起；复制 6 次，按需替换 URL -->
-        <div class="oneanim-item">
-          <div class="oneanim-card" 
-          style="
-            --sub:url('assets/single_ref/000098_info_input.jpg'); 
-             --bg:url('assets/single_ref/000098_info_background.jpg'); 
-          --bgbox:url('assets/single_ref/000098_info_background_annotated.jpg'); 
-            --out:url('assets/single_ref/000098_info_output.jpg'); 
-          --dur:8s;">
-            <div class="oneanim-layer step1-sub"></div>
-            <div class="oneanim-layer step2-bg"></div>
-            <div class="oneanim-layer step3-box"></div>
-            <div class="oneanim-layer step4-out"></div>
-          </div>
-            <div class="oneanim-caption">
-            <span data-step="1">Subject</span> &nbsp;→&nbsp;
-            <span data-step="2">Background</span> &nbsp;→&nbsp;
-            <span data-step="3">ROI</span> &nbsp;→&nbsp;
-            <span data-step="4">Output</span>
-          </div>
-        </div>
-
-        <div class="oneanim-item">
-          <div class="oneanim-card" 
-          style="
-            --sub:url('assets/single_ref/000345_info_input.jpg'); 
-             --bg:url('assets/single_ref/000345_info_background.jpg'); 
-          --bgbox:url('assets/single_ref/000345_info_background_annotated.jpg'); 
-            --out:url('assets/single_ref/000345_info_output.jpg'); 
-          --dur:8s;">
-            <div class="oneanim-layer step1-sub"></div>
-            <div class="oneanim-layer step2-bg"></div>
-            <div class="oneanim-layer step3-box"></div>
-            <div class="oneanim-layer step4-out"></div>
-          </div>
-            <div class="oneanim-caption">
-            <span data-step="1">Subject</span> &nbsp;→&nbsp;
-            <span data-step="2">Background</span> &nbsp;→&nbsp;
-            <span data-step="3">ROI</span> &nbsp;→&nbsp;
-            <span data-step="4">Output</span>
-          </div>
-        </div>
-
-        <div class="oneanim-item">
-          <div class="oneanim-card" 
-          style="
-            --sub:url('assets/single_ref/000350_info_input.jpg'); 
-             --bg:url('assets/single_ref/000350_info_background.jpg'); 
-          --bgbox:url('assets/single_ref/000350_info_background_annotated.jpg'); 
-            --out:url('assets/single_ref/000350_info_output.jpg'); 
-          --dur:8s;">
-            <div class="oneanim-layer step1-sub"></div>
-            <div class="oneanim-layer step2-bg"></div>
-            <div class="oneanim-layer step3-box"></div>
-            <div class="oneanim-layer step4-out"></div>
-          </div>
-            <div class="oneanim-caption">
-            <span data-step="1">Subject</span> &nbsp;→&nbsp;
-            <span data-step="2">Background</span> &nbsp;→&nbsp;
-            <span data-step="3">ROI</span> &nbsp;→&nbsp;
-            <span data-step="4">Output</span>
-          </div>
-        </div>
-
-        <div class="oneanim-item">
-          <div class="oneanim-card" 
-          style="
-            --sub:url('assets/single_ref/000067_info_input.jpg'); 
-             --bg:url('assets/single_ref/000067_info_background.jpg'); 
-          --bgbox:url('assets/single_ref/000067_info_background_annotated.jpg'); 
-            --out:url('assets/single_ref/000067_info_output.jpg'); 
-          --dur:8s;">
-            <div class="oneanim-layer step1-sub"></div>
-            <div class="oneanim-layer step2-bg"></div>
-            <div class="oneanim-layer step3-box"></div>
-            <div class="oneanim-layer step4-out"></div>
-          </div>
-          <div class="oneanim-caption">
-            <span data-step="1">Subject</span> &nbsp;→&nbsp;
-            <span data-step="2">Background</span> &nbsp;→&nbsp;
-            <span data-step="3">ROI</span> &nbsp;→&nbsp;
-            <span data-step="4">Output</span>
-          </div>
-        </div>
-
-        <div class="oneanim-item">
-          <div class="oneanim-card" 
-          style="
-            --sub:url('assets/single_ref/000072_info_input.jpg'); 
-             --bg:url('assets/single_ref/000072_info_background.jpg'); 
-          --bgbox:url('assets/single_ref/000072_info_background_annotated.jpg'); 
-            --out:url('assets/single_ref/000072_info_output.jpg'); 
-          --dur:8s;">
-            <div class="oneanim-layer step1-sub"></div>
-            <div class="oneanim-layer step2-bg"></div>
-            <div class="oneanim-layer step3-box"></div>
-            <div class="oneanim-layer step4-out"></div>
-          </div>
-          <div class="oneanim-caption">
-            <span data-step="1">Subject</span> &nbsp;→&nbsp;
-            <span data-step="2">Background</span> &nbsp;→&nbsp;
-            <span data-step="3">ROI</span> &nbsp;→&nbsp;
-            <span data-step="4">Output</span>
-          </div>
-
-        </div>
-
-        <div class="oneanim-item">
-          <div class="oneanim-card" 
-          style="
-            --sub:url('assets/single_ref/000012_info_input.jpg'); 
-             --bg:url('assets/single_ref/000012_info_background.jpg'); 
-          --bgbox:url('assets/single_ref/000012_info_background_annotated.jpg'); 
-            --out:url('assets/single_ref/000012_info_output.jpg'); 
-          --dur:8s;">
-            <div class="oneanim-layer step1-sub"></div>
-            <div class="oneanim-layer step2-bg"></div>
-            <div class="oneanim-layer step3-box"></div>
-            <div class="oneanim-layer step4-out"></div>
-          </div>
-          <div class="oneanim-caption">
-            <span data-step="1">Subject</span> &nbsp;→&nbsp;
-            <span data-step="2">Background</span> &nbsp;→&nbsp;
-            <span data-step="3">ROI</span> &nbsp;→&nbsp;
-            <span data-step="4">Output</span>
-          </div>
-
-        </div>
-
-      </div>
-    </div>
+<!-- ══════════ HERO ══════════ -->
+<section id="home">
+  <div class="hero-badge reveal">Dataset Gallery</div>
+  <h1 class="hero-title reveal">ConsistCompose3M</h1>
+  <p class="hero-sub reveal">A 3.4M-sample multimodal dataset for layout-grounded image composition with layout and identity annotations.</p>
+  <div class="hero-btns reveal">
+    <a href="main.html" class="btn btn-primary">← Project Page</a>
+    <a href="https://arxiv.org/abs/2511.18333" target="_blank" class="btn btn-outline">📄 Paper</a>
+    <a href="https://huggingface.co/sensenova/ConsistCompose-BAGEL-7B-MoT" target="_blank" class="btn btn-outline">🤗 Model</a>
+    <a href="https://github.com/OpenSenseNova/ConsistCompose" target="_blank" class="btn btn-outline">💻 Code</a>
+    <a href="https://huggingface.co/datasets/sensenova/ConsistCompose3M" target="_blank" class="btn btn-outline">📂 Dataset</a>
+    <a href="#bibtex" class="btn btn-outline">📑 BibTeX</a>
+  </div>
 </section>
 
-<!-- Page 5: Image Wall -->
-<section class="snap" id="multiref">
-  <div class="fullbleed">
-    <h2 class="section-title">Single Subject Image Wall</h2>
+<div class="sec-divider"></div>
 
-    <!-- 3 行射流，素材由 JS 自动注入 -->
+<!-- ══════════ STATS ══════════ -->
+<section id="stats">
+  <div class="sec-wrap">
+    <div class="sec-label reveal">Overview</div>
+    <h2 class="sec-title reveal">Data Statistics</h2>
+    <div class="stats-grid reveal">
+      <div class="card stat-card">
+        <div class="stat-title" style="color:#fb72c3">Text2Image</div>
+        <div class="ring" data-color="#fb72c3" data-track="#3b3b44" data-value="2665502" data-total="3533939"></div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-title" style="color:#a78bfa">Single-Reference</div>
+        <div class="ring" data-color="#a78bfa" data-track="#3b3b44" data-value="77807" data-total="3533939"></div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-title" style="color:#5fb0ff">Multi-Reference</div>
+        <div class="ring" data-color="#5fb0ff" data-track="#3b3b44" data-value="790630" data-total="3533939"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sec-divider"></div>
+
+<!-- ══════════ TEXT2IMAGE ══════════ -->
+<section id="text2image" class="ticker-section">
+  <div class="sec-wrap">
+    <div class="sec-label reveal">Category 1</div>
+    <h2 class="sec-title reveal">Layout Text to Image</h2>
+    <div class="ticker row-gap shoot demo-shoot-t2i" data-speed="200" data-gap="24"></div>
+    <div class="ticker row-gap shoot demo-shoot-t2i" data-speed="190" data-gap="24"></div>
+    <div class="ticker row-gap shoot demo-shoot-t2i" data-speed="180" data-gap="24"></div>
+  </div>
+</section>
+
+<div class="sec-divider"></div>
+
+<!-- ══════════ SINGLE SUBJECT ANIMATION ══════════ -->
+<section id="single-anim-grid" class="anim-section">
+  <div class="sec-wrap">
+    <div class="sec-label reveal">Category 2</div>
+    <h2 class="sec-title reveal">Single Subject</h2>
+    <div class="oneanim-grid reveal">
+
+      <div class="oneanim-item">
+        <div class="oneanim-card" style="--sub:url('assets/single_ref/000098_info_input.jpg'); --bg:url('assets/single_ref/000098_info_background.jpg'); --bgbox:url('assets/single_ref/000098_info_background_annotated.jpg'); --out:url('assets/single_ref/000098_info_output.jpg'); --dur:8s;">
+          <div class="oneanim-layer step1-sub"></div><div class="oneanim-layer step2-bg"></div><div class="oneanim-layer step3-box"></div><div class="oneanim-layer step4-out"></div>
+        </div>
+        <div class="oneanim-caption"><span data-step="1">Subject</span> &nbsp;→&nbsp; <span data-step="2">Background</span> &nbsp;→&nbsp; <span data-step="3">ROI</span> &nbsp;→&nbsp; <span data-step="4">Output</span></div>
+      </div>
+
+      <div class="oneanim-item">
+        <div class="oneanim-card" style="--sub:url('assets/single_ref/000345_info_input.jpg'); --bg:url('assets/single_ref/000345_info_background.jpg'); --bgbox:url('assets/single_ref/000345_info_background_annotated.jpg'); --out:url('assets/single_ref/000345_info_output.jpg'); --dur:8s;">
+          <div class="oneanim-layer step1-sub"></div><div class="oneanim-layer step2-bg"></div><div class="oneanim-layer step3-box"></div><div class="oneanim-layer step4-out"></div>
+        </div>
+        <div class="oneanim-caption"><span data-step="1">Subject</span> &nbsp;→&nbsp; <span data-step="2">Background</span> &nbsp;→&nbsp; <span data-step="3">ROI</span> &nbsp;→&nbsp; <span data-step="4">Output</span></div>
+      </div>
+
+      <div class="oneanim-item">
+        <div class="oneanim-card" style="--sub:url('assets/single_ref/000350_info_input.jpg'); --bg:url('assets/single_ref/000350_info_background.jpg'); --bgbox:url('assets/single_ref/000350_info_background_annotated.jpg'); --out:url('assets/single_ref/000350_info_output.jpg'); --dur:8s;">
+          <div class="oneanim-layer step1-sub"></div><div class="oneanim-layer step2-bg"></div><div class="oneanim-layer step3-box"></div><div class="oneanim-layer step4-out"></div>
+        </div>
+        <div class="oneanim-caption"><span data-step="1">Subject</span> &nbsp;→&nbsp; <span data-step="2">Background</span> &nbsp;→&nbsp; <span data-step="3">ROI</span> &nbsp;→&nbsp; <span data-step="4">Output</span></div>
+      </div>
+
+      <div class="oneanim-item">
+        <div class="oneanim-card" style="--sub:url('assets/single_ref/000067_info_input.jpg'); --bg:url('assets/single_ref/000067_info_background.jpg'); --bgbox:url('assets/single_ref/000067_info_background_annotated.jpg'); --out:url('assets/single_ref/000067_info_output.jpg'); --dur:8s;">
+          <div class="oneanim-layer step1-sub"></div><div class="oneanim-layer step2-bg"></div><div class="oneanim-layer step3-box"></div><div class="oneanim-layer step4-out"></div>
+        </div>
+        <div class="oneanim-caption"><span data-step="1">Subject</span> &nbsp;→&nbsp; <span data-step="2">Background</span> &nbsp;→&nbsp; <span data-step="3">ROI</span> &nbsp;→&nbsp; <span data-step="4">Output</span></div>
+      </div>
+
+      <div class="oneanim-item">
+        <div class="oneanim-card" style="--sub:url('assets/single_ref/000072_info_input.jpg'); --bg:url('assets/single_ref/000072_info_background.jpg'); --bgbox:url('assets/single_ref/000072_info_background_annotated.jpg'); --out:url('assets/single_ref/000072_info_output.jpg'); --dur:8s;">
+          <div class="oneanim-layer step1-sub"></div><div class="oneanim-layer step2-bg"></div><div class="oneanim-layer step3-box"></div><div class="oneanim-layer step4-out"></div>
+        </div>
+        <div class="oneanim-caption"><span data-step="1">Subject</span> &nbsp;→&nbsp; <span data-step="2">Background</span> &nbsp;→&nbsp; <span data-step="3">ROI</span> &nbsp;→&nbsp; <span data-step="4">Output</span></div>
+      </div>
+
+      <div class="oneanim-item">
+        <div class="oneanim-card" style="--sub:url('assets/single_ref/000012_info_input.jpg'); --bg:url('assets/single_ref/000012_info_background.jpg'); --bgbox:url('assets/single_ref/000012_info_background_annotated.jpg'); --out:url('assets/single_ref/000012_info_output.jpg'); --dur:8s;">
+          <div class="oneanim-layer step1-sub"></div><div class="oneanim-layer step2-bg"></div><div class="oneanim-layer step3-box"></div><div class="oneanim-layer step4-out"></div>
+        </div>
+        <div class="oneanim-caption"><span data-step="1">Subject</span> &nbsp;→&nbsp; <span data-step="2">Background</span> &nbsp;→&nbsp; <span data-step="3">ROI</span> &nbsp;→&nbsp; <span data-step="4">Output</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="sec-divider"></div>
+
+<!-- ══════════ SINGLE WALL ══════════ -->
+<section id="multiref" class="ticker-section">
+  <div class="sec-wrap">
+    <div class="sec-label reveal">Category 2 — Full Wall</div>
+    <h2 class="sec-title reveal">Single Subject Image Wall</h2>
     <div class="ticker row-gap shoot demo-shoot" data-speed="200" data-gap="24"></div>
     <div class="ticker row-gap shoot demo-shoot" data-speed="190" data-gap="24"></div>
     <div class="ticker row-gap shoot demo-shoot" data-speed="180" data-gap="24"></div>
   </div>
 </section>
 
+<div class="sec-divider"></div>
 
+<!-- ══════════ MULTI-SUBJECT ANIMATION ══════════ -->
+<section id="double-anim-grid" class="anim-section">
+  <div class="sec-wrap">
+    <div class="sec-label reveal">Category 3</div>
+    <h2 class="sec-title reveal">Multi-subject</h2>
+    <div class="oneanim5-grid reveal">
 
-
-<!-- Page: Double Subject Animation (x6) 三列自适应 -->
-<section class="snap" id="double-anim-grid">
-  <div class="fullbleed">
-    <h2 class="section-title">Multi-subject</h2>
-    <div class="oneanim5-grid">
-
-      <!-- 卡片 1 -->
       <div class="oneanim5-item">
-        <div class="oneanim5-card"
-          style="
-            --sub1:url('assets/mult_ref/000081_img1.jpg');
-            --sub2:url('assets/mult_ref/000081_img2.jpg');
-              --bg:url('assets/mult_ref/000081_background.jpg');
-           --bgbox:url('assets/mult_ref/000081_background_annotated.jpg');
-             --out:url('assets/mult_ref/000081_output.jpg');
-            --dur:10s;">
-          <div class="oneanim5-layer step1-sub1"></div>
-          <div class="oneanim5-layer step2-sub2"></div>
-          <div class="oneanim5-layer step3-bg"></div>
-          <div class="oneanim5-layer step4-box"></div>
-          <div class="oneanim5-layer step5-out"></div>
+        <div class="oneanim5-card" style="--sub1:url('assets/mult_ref/000081_img1.jpg'); --sub2:url('assets/mult_ref/000081_img2.jpg'); --bg:url('assets/mult_ref/000081_background.jpg'); --bgbox:url('assets/mult_ref/000081_background_annotated.jpg'); --out:url('assets/mult_ref/000081_output.jpg'); --dur:10s;">
+          <div class="oneanim5-layer step1-sub1"></div><div class="oneanim5-layer step2-sub2"></div><div class="oneanim5-layer step3-bg"></div><div class="oneanim5-layer step4-box"></div><div class="oneanim5-layer step5-out"></div>
         </div>
-        <div class="oneanim5-caption">
-          <span data-step="1">Sub 1</span> &nbsp;→&nbsp;
-          <span data-step="2">Sub 2</span> &nbsp;→&nbsp;
-          <span data-step="3">Background</span> &nbsp;→&nbsp;
-          <span data-step="4">ROI</span> &nbsp;→&nbsp;
-          <span data-step="5">Output</span>
-        </div>
+        <div class="oneanim5-caption"><span data-step="1">Sub 1</span> &nbsp;→&nbsp; <span data-step="2">Sub 2</span> &nbsp;→&nbsp; <span data-step="3">Background</span> &nbsp;→&nbsp; <span data-step="4">ROI</span> &nbsp;→&nbsp; <span data-step="5">Output</span></div>
       </div>
 
-      <!-- 卡片 2 -->
       <div class="oneanim5-item">
-        <div class="oneanim5-card"
-          style="
-            --sub1:url('assets/mult_ref/000098_img1.jpg');
-            --sub2:url('assets/mult_ref/000098_img2.jpg');
-              --bg:url('assets/mult_ref/000098_background.jpg');
-           --bgbox:url('assets/mult_ref/000098_background_annotated.jpg');
-             --out:url('assets/mult_ref/000098_output.jpg');
-            --dur:10s;">
-          <div class="oneanim5-layer step1-sub1"></div>
-          <div class="oneanim5-layer step2-sub2"></div>
-          <div class="oneanim5-layer step3-bg"></div>
-          <div class="oneanim5-layer step4-box"></div>
-          <div class="oneanim5-layer step5-out"></div>
+        <div class="oneanim5-card" style="--sub1:url('assets/mult_ref/000098_img1.jpg'); --sub2:url('assets/mult_ref/000098_img2.jpg'); --bg:url('assets/mult_ref/000098_background.jpg'); --bgbox:url('assets/mult_ref/000098_background_annotated.jpg'); --out:url('assets/mult_ref/000098_output.jpg'); --dur:10s;">
+          <div class="oneanim5-layer step1-sub1"></div><div class="oneanim5-layer step2-sub2"></div><div class="oneanim5-layer step3-bg"></div><div class="oneanim5-layer step4-box"></div><div class="oneanim5-layer step5-out"></div>
         </div>
-        <div class="oneanim5-caption">
-          <span data-step="1">Sub 1</span> &nbsp;→&nbsp;
-          <span data-step="2">Sub 2</span> &nbsp;→&nbsp;
-          <span data-step="3">Background</span> &nbsp;→&nbsp;
-          <span data-step="4">ROI</span> &nbsp;→&nbsp;
-          <span data-step="5">Output</span>
-        </div>
+        <div class="oneanim5-caption"><span data-step="1">Sub 1</span> &nbsp;→&nbsp; <span data-step="2">Sub 2</span> &nbsp;→&nbsp; <span data-step="3">Background</span> &nbsp;→&nbsp; <span data-step="4">ROI</span> &nbsp;→&nbsp; <span data-step="5">Output</span></div>
       </div>
 
-      <!-- 卡片 3 -->
       <div class="oneanim5-item">
-        <div class="oneanim5-card"
-          style="
-            --sub1:url('assets/mult_ref/000120_img1.jpg');
-            --sub2:url('assets/mult_ref/000120_img2.jpg');
-              --bg:url('assets/mult_ref/000120_background.jpg');
-           --bgbox:url('assets/mult_ref/000120_background_annotated.jpg');
-             --out:url('assets/mult_ref/000120_output.jpg');
-            --dur:10s;">
-          <div class="oneanim5-layer step1-sub1"></div>
-          <div class="oneanim5-layer step2-sub2"></div>
-          <div class="oneanim5-layer step3-bg"></div>
-          <div class="oneanim5-layer step4-box"></div>
-          <div class="oneanim5-layer step5-out"></div>
+        <div class="oneanim5-card" style="--sub1:url('assets/mult_ref/000120_img1.jpg'); --sub2:url('assets/mult_ref/000120_img2.jpg'); --bg:url('assets/mult_ref/000120_background.jpg'); --bgbox:url('assets/mult_ref/000120_background_annotated.jpg'); --out:url('assets/mult_ref/000120_output.jpg'); --dur:10s;">
+          <div class="oneanim5-layer step1-sub1"></div><div class="oneanim5-layer step2-sub2"></div><div class="oneanim5-layer step3-bg"></div><div class="oneanim5-layer step4-box"></div><div class="oneanim5-layer step5-out"></div>
         </div>
-        <div class="oneanim5-caption">
-          <span data-step="1">Sub 1</span> &nbsp;→&nbsp;
-          <span data-step="2">Sub 2</span> &nbsp;→&nbsp;
-          <span data-step="3">Background</span> &nbsp;→&nbsp;
-          <span data-step="4">ROI</span> &nbsp;→&nbsp;
-          <span data-step="5">Output</span>
-        </div>
+        <div class="oneanim5-caption"><span data-step="1">Sub 1</span> &nbsp;→&nbsp; <span data-step="2">Sub 2</span> &nbsp;→&nbsp; <span data-step="3">Background</span> &nbsp;→&nbsp; <span data-step="4">ROI</span> &nbsp;→&nbsp; <span data-step="5">Output</span></div>
       </div>
 
-      <!-- 卡片 4 -->
       <div class="oneanim5-item">
-        <div class="oneanim5-card"
-          style="
-            --sub1:url('assets/mult_ref/000125_img1.jpg');
-            --sub2:url('assets/mult_ref/000125_img2.jpg');
-              --bg:url('assets/mult_ref/000125_background.jpg');
-           --bgbox:url('assets/mult_ref/000125_background_annotated.jpg');
-             --out:url('assets/mult_ref/000125_output.jpg');
-            --dur:10s;">
-          <div class="oneanim5-layer step1-sub1"></div>
-          <div class="oneanim5-layer step2-sub2"></div>
-          <div class="oneanim5-layer step3-bg"></div>
-          <div class="oneanim5-layer step4-box"></div>
-          <div class="oneanim5-layer step5-out"></div>
+        <div class="oneanim5-card" style="--sub1:url('assets/mult_ref/000125_img1.jpg'); --sub2:url('assets/mult_ref/000125_img2.jpg'); --bg:url('assets/mult_ref/000125_background.jpg'); --bgbox:url('assets/mult_ref/000125_background_annotated.jpg'); --out:url('assets/mult_ref/000125_output.jpg'); --dur:10s;">
+          <div class="oneanim5-layer step1-sub1"></div><div class="oneanim5-layer step2-sub2"></div><div class="oneanim5-layer step3-bg"></div><div class="oneanim5-layer step4-box"></div><div class="oneanim5-layer step5-out"></div>
         </div>
-        <div class="oneanim5-caption">
-          <span data-step="1">Sub 1</span> &nbsp;→&nbsp;
-          <span data-step="2">Sub 2</span> &nbsp;→&nbsp;
-          <span data-step="3">Background</span> &nbsp;→&nbsp;
-          <span data-step="4">ROI</span> &nbsp;→&nbsp;
-          <span data-step="5">Output</span>
-        </div>
+        <div class="oneanim5-caption"><span data-step="1">Sub 1</span> &nbsp;→&nbsp; <span data-step="2">Sub 2</span> &nbsp;→&nbsp; <span data-step="3">Background</span> &nbsp;→&nbsp; <span data-step="4">ROI</span> &nbsp;→&nbsp; <span data-step="5">Output</span></div>
       </div>
 
-      <!-- 卡片 5 -->
       <div class="oneanim5-item">
-        <div class="oneanim5-card"
-          style="
-            --sub1:url('assets/mult_ref/000217_img1.jpg');
-            --sub2:url('assets/mult_ref/000217_img2.jpg');
-              --bg:url('assets/mult_ref/000217_background.jpg');
-           --bgbox:url('assets/mult_ref/000217_background_annotated.jpg');
-             --out:url('assets/mult_ref/000217_output.jpg');
-            --dur:10s;">
-          <div class="oneanim5-layer step1-sub1"></div>
-          <div class="oneanim5-layer step2-sub2"></div>
-          <div class="oneanim5-layer step3-bg"></div>
-          <div class="oneanim5-layer step4-box"></div>
-          <div class="oneanim5-layer step5-out"></div>
+        <div class="oneanim5-card" style="--sub1:url('assets/mult_ref/000217_img1.jpg'); --sub2:url('assets/mult_ref/000217_img2.jpg'); --bg:url('assets/mult_ref/000217_background.jpg'); --bgbox:url('assets/mult_ref/000217_background_annotated.jpg'); --out:url('assets/mult_ref/000217_output.jpg'); --dur:10s;">
+          <div class="oneanim5-layer step1-sub1"></div><div class="oneanim5-layer step2-sub2"></div><div class="oneanim5-layer step3-bg"></div><div class="oneanim5-layer step4-box"></div><div class="oneanim5-layer step5-out"></div>
         </div>
-        <div class="oneanim5-caption">
-          <span data-step="1">Sub 1</span> &nbsp;→&nbsp;
-          <span data-step="2">Sub 2</span> &nbsp;→&nbsp;
-          <span data-step="3">Background</span> &nbsp;→&nbsp;
-          <span data-step="4">ROI</span> &nbsp;→&nbsp;
-          <span data-step="5">Output</span>
-        </div>
+        <div class="oneanim5-caption"><span data-step="1">Sub 1</span> &nbsp;→&nbsp; <span data-step="2">Sub 2</span> &nbsp;→&nbsp; <span data-step="3">Background</span> &nbsp;→&nbsp; <span data-step="4">ROI</span> &nbsp;→&nbsp; <span data-step="5">Output</span></div>
       </div>
 
-      <!-- 卡片 6 -->
       <div class="oneanim5-item">
-        <div class="oneanim5-card"
-          style="
-            --sub1:url('assets/mult_ref/000171_img1.jpg');
-            --sub2:url('assets/mult_ref/000171_img2.jpg');
-              --bg:url('assets/mult_ref/000171_background.jpg');
-           --bgbox:url('assets/mult_ref/000171_background_annotated.jpg');
-             --out:url('assets/mult_ref/000171_output.jpg');
-            --dur:10s;">
-          <div class="oneanim5-layer step1-sub1"></div>
-          <div class="oneanim5-layer step2-sub2"></div>
-          <div class="oneanim5-layer step3-bg"></div>
-          <div class="oneanim5-layer step4-box"></div>
-          <div class="oneanim5-layer step5-out"></div>
+        <div class="oneanim5-card" style="--sub1:url('assets/mult_ref/000171_img1.jpg'); --sub2:url('assets/mult_ref/000171_img2.jpg'); --bg:url('assets/mult_ref/000171_background.jpg'); --bgbox:url('assets/mult_ref/000171_background_annotated.jpg'); --out:url('assets/mult_ref/000171_output.jpg'); --dur:10s;">
+          <div class="oneanim5-layer step1-sub1"></div><div class="oneanim5-layer step2-sub2"></div><div class="oneanim5-layer step3-bg"></div><div class="oneanim5-layer step4-box"></div><div class="oneanim5-layer step5-out"></div>
         </div>
-        <div class="oneanim5-caption">
-          <span data-step="1">Sub 1</span> &nbsp;→&nbsp;
-          <span data-step="2">Sub 2</span> &nbsp;→&nbsp;
-          <span data-step="3">Background</span> &nbsp;→&nbsp;
-          <span data-step="4">ROI</span> &nbsp;→&nbsp;
-          <span data-step="5">Output</span>
-        </div>
+        <div class="oneanim5-caption"><span data-step="1">Sub 1</span> &nbsp;→&nbsp; <span data-step="2">Sub 2</span> &nbsp;→&nbsp; <span data-step="3">Background</span> &nbsp;→&nbsp; <span data-step="4">ROI</span> &nbsp;→&nbsp; <span data-step="5">Output</span></div>
       </div>
 
     </div>
   </div>
 </section>
 
+<div class="sec-divider"></div>
 
-
-<!-- Page 6: Four-Image Wall -->
-<section class="snap" id="multiref-x4">
-  <div class="fullbleed">
-    <h2 class="section-title">Multi-subject Image Wall (FLUX)</h2>
-
-    <!-- 3 行射流，素材由 JS 自动注入 -->
+<!-- ══════════ MULTI WALL FLUX ══════════ -->
+<section id="multiref-x4" class="ticker-section">
+  <div class="sec-wrap">
+    <div class="sec-label reveal">Category 3 — Full Wall</div>
+    <h2 class="sec-title reveal">Multi-subject Image Wall (FLUX)</h2>
     <div class="ticker row-gap shoot demo-shoot4" data-speed="200" data-gap="24"></div>
     <div class="ticker row-gap shoot demo-shoot4" data-speed="190" data-gap="24"></div>
     <div class="ticker row-gap shoot demo-shoot4" data-speed="180" data-gap="24"></div>
   </div>
 </section>
 
-  <!-- Page 8: Multi-Reference No Background -->
-  <section class="snap" id="multiref-nobg">
-    <div class="fullbleed">
-      <h2 class="section-title">Multi-subject Image Wall (Qwen Image)</h2>
-      <div class="ticker row-gap shoot demo-shoot-nobg" data-speed="200" data-gap="24"></div>
-      <div class="ticker row-gap shoot demo-shoot-nobg" data-speed="190" data-gap="24"></div>
-      <div class="ticker row-gap shoot demo-shoot-nobg" data-speed="180" data-gap="24"></div>
-    </div>
-  </section>
+<div class="sec-divider"></div>
 
-    
-<!-- Page: BibTeX -->
-<section class="snap" id="bibtex">
+<!-- ══════════ MULTI WALL QWEN ══════════ -->
+<section id="multiref-nobg" class="ticker-section">
+  <div class="sec-wrap">
+    <div class="sec-label reveal">Category 3 — Qwen</div>
+    <h2 class="sec-title reveal">Multi-subject Image Wall (Qwen Image)</h2>
+    <div class="ticker row-gap shoot demo-shoot-nobg" data-speed="200" data-gap="24"></div>
+    <div class="ticker row-gap shoot demo-shoot-nobg" data-speed="190" data-gap="24"></div>
+    <div class="ticker row-gap shoot demo-shoot-nobg" data-speed="180" data-gap="24"></div>
+  </div>
+</section>
 
-  <!-- BibTeX 主卡片（居中） -->
-  <div class="inner">
-    <div class="card" style="padding:26px; position:relative;">
-      <h2 class="section-title">BibTeX</h2>
-      <p style="color:var(--muted); font-size:14px; margin:-6px 0 16px;">Click <strong style="color:#e2e8f0;">Copy</strong> to copy the citation into clipboard.</p>
-      <div style="position:relative;">
-        <button id="copyBibBtn" class="copy-btn">Copy</button>
-        <pre id="bibtexContent" style="white-space:pre-wrap; word-break:break-word; color:#e6e9ef; background:rgba(5,8,18,0.55); border:1px solid rgba(255,255,255,0.08); padding:20px; border-radius:14px; overflow:hidden; font-size:13.5px; line-height:1.7;"><code>@article{shi2025consistcompose,
+<div class="sec-divider"></div>
+
+<!-- ══════════ BIBTEX ══════════ -->
+<section id="bibtex">
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;width:100%;padding:20px 0;">
+    <div class="card bibtex-card">
+      <div class="sec-label" style="margin-bottom:10px;">Citation</div>
+      <h2 class="sec-title">BibTeX</h2>
+      <p class="bibtex-sub">Click <strong style="color:#e2e8f0;">Copy</strong> to copy the citation into clipboard.</p>
+      <div class="bibtex-wrap">
+        <button class="bibtex-copy" id="copyBibBtn">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy
+        </button>
+        <pre class="bibtex-pre" id="bibtexContent">@article{shi2025consistcompose,
   title={ConsistCompose: Unified Multimodal Layout Control for Image Composition},
   author={Shi, Xuanke and Li, Boxuan and Han, Xiaoyang and Cai, Zhongang and Yang, Lei and Lin, Dahua and Wang, Quan},
   journal={arXiv preprint arXiv:2511.18333},
   year={2025}
-}</code></pre>
+}</pre>
       </div>
     </div>
   </div>
 
-  <!-- Footer 贴底 -->
+  <!-- Footer -->
   <footer class="site-footer">
-    <div class="footer-inner">
-      <div class="footer-left">
-        <div class="footer-title">ConsistCompose3M</div>
-        <div class="footer-desc">Dataset Gallery · ConsistCompose Project</div>
-        <div class="footer-links">
-          <a href="https://arxiv.org/abs/2511.18333" target="_blank" class="footer-btn">Paper</a>
-          <a href="https://github.com/OpenSenseNova/ConsistCompose" target="_blank" class="footer-btn">Code</a>
-          <a href="https://huggingface.co/sensenova/ConsistCompose-BAGEL-7B-MoT" target="_blank" class="footer-btn">Model</a>
-          <a href="https://huggingface.co/datasets/sensenova/ConsistCompose3M" target="_blank" class="footer-btn">Dataset</a>
-        </div>
-      </div>
-      <div class="footer-notes card">
-        <div class="footer-notes-title">Notes</div>
-        <div class="footer-notes-body">
-          This gallery showcases samples from the ConsistCompose3M dataset. Navigate between sections using the top bar or scroll to explore all data categories.
-        </div>
+    <div class="footer-left">
+      <div class="footer-title">ConsistCompose3M</div>
+      <div class="footer-desc">Dataset Gallery · ConsistCompose Project</div>
+      <div class="footer-links">
+        <a href="https://arxiv.org/abs/2511.18333" target="_blank" class="footer-btn">Paper</a>
+        <a href="https://github.com/OpenSenseNova/ConsistCompose" target="_blank" class="footer-btn">Code</a>
+        <a href="https://huggingface.co/sensenova/ConsistCompose-BAGEL-7B-MoT" target="_blank" class="footer-btn">Model</a>
+        <a href="https://huggingface.co/datasets/sensenova/ConsistCompose3M" target="_blank" class="footer-btn">Dataset</a>
       </div>
     </div>
+    <div class="glass footer-notes">
+      <div class="footer-notes-title">Notes</div>
+      <div class="footer-notes-body">This gallery showcases samples from the ConsistCompose3M dataset. Navigate between sections using the top bar or scroll to explore all categories.</div>
+    </div>
   </footer>
-
 </section>
 
-</div>
-
-
-
-<!-- 右侧分页点 -->
-<div class="dots" id="dots"></div>
-
 <script>
-/* ===== 1) 右侧圆点 & 分页滚动控制 ===== */
-const container = document.getElementById('snapper');
-const sections = Array.from(document.querySelectorAll('section.snap'));
-const dotsWrap = document.getElementById('dots');
-
-let active = 0;
-sections.forEach((_,i)=>{
-  const d=document.createElement('div'); d.className='dot'; d.addEventListener('click',()=>go(i));
-  dotsWrap.appendChild(d);
-});
-function mark(i){
-  active=i;
-  dotsWrap.querySelectorAll('.dot').forEach((el,idx)=>el.classList.toggle('active', idx===i));
-  // 同步顶部导航高亮
-  document.querySelectorAll('.topnav-item[data-section]').forEach(el=>{
-    el.classList.toggle('active', parseInt(el.dataset.section)===i);
-  });
-}
-function go(i){
-  i=Math.max(0,Math.min(sections.length-1,i));
-  sections[i].scrollIntoView({behavior:'smooth'});
-  mark(i);
-}
-mark(0);
-
-/* 顶部导航点击（含 brand） */
-document.querySelectorAll('.topnav-item[data-section], .topnav-brand[data-section]').forEach(el=>{
-  el.addEventListener('click', e=>{
-    e.preventDefault();
-    go(parseInt(el.dataset.section));
-  });
-});
-
-let lock=0;
-container.addEventListener('wheel',e=>{
-  e.preventDefault();
-  if(lock) return;
-  lock=1;
-  const dir = e.deltaY>0 ? 1 : -1;
-  go(active+dir);
-  setTimeout(()=>lock=0, 650);
-},{passive:false});
-
-/* 键盘 ↑↓ 翻页 */
-window.addEventListener('keydown',e=>{
-  if(e.key==='ArrowDown' || e.key==='PageDown') go(active+1);
-  if(e.key==='ArrowUp' || e.key==='PageUp') go(active-1);
-});
-
-/* 监听滚动（手动拖动时同步圆点） */
-const obs = new IntersectionObserver((ents)=>{
-  ents.forEach(ent=>{
-    if(ent.isIntersecting){
-      const idx = sections.indexOf(ent.target);
-      if(idx!==-1) mark(idx);
+/* ── Nav active on scroll ── */
+const allSections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+const navObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const a = document.querySelector(`.nav-link[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
     }
   });
-}, {root:container, threshold:.6});
-sections.forEach(s=>obs.observe(s));
+}, { threshold: 0.35 });
+allSections.forEach(s => navObs.observe(s));
 
-/* ===== 2) 统计环图 ===== */
-function ring(el){
+/* ── Scroll reveal ── */
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); }
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+/* ── Ring charts ── */
+function ring(el) {
   const size = el.clientWidth;
   const c = document.createElement('canvas');
-  c.width=c.height=size; el.appendChild(c);
-  const ctx=c.getContext('2d');
-  const color=el.dataset.color, track=el.dataset.track||'#333';
-  const val=+el.dataset.value, total=+el.dataset.total;
-  const pct = Math.max(0, Math.min(1, val/total));
-  const cx=size/2, cy=size/2, r=size/2-14, lw=20;
-
-  ctx.lineCap='round';
-  ctx.lineWidth=lw;
-  ctx.strokeStyle=track;
+  c.width = c.height = size; el.appendChild(c);
+  const ctx = c.getContext('2d');
+  const color = el.dataset.color, track = el.dataset.track || '#333';
+  const val = +el.dataset.value, total = +el.dataset.total;
+  const pct = Math.max(0, Math.min(1, val / total));
+  const cx = size/2, cy = size/2, r = size/2-14, lw = 18;
+  ctx.lineCap = 'round'; ctx.lineWidth = lw;
+  ctx.strokeStyle = track;
   ctx.beginPath(); ctx.arc(cx,cy,r,-Math.PI/2, 1.5*Math.PI); ctx.stroke();
-
-  ctx.strokeStyle=color;
+  ctx.strokeStyle = color;
   ctx.beginPath(); ctx.arc(cx,cy,r,-Math.PI/2, -Math.PI/2 + 2*Math.PI*pct); ctx.stroke();
-
-  const center=document.createElement('div');
-  center.className='center';
+  const center = document.createElement('div');
+  center.className = 'center';
   center.innerHTML = `${val.toLocaleString()}<small>Images</small>`;
   el.appendChild(center);
 }
 document.querySelectorAll('.ring').forEach(ring);
 
-/* 内链锚点平滑跳转 */
-document.querySelectorAll('a[href^="#"]').forEach(a=>{
-  a.addEventListener('click', e=>{
-    const id = a.getAttribute('href').slice(1);
-    const target = id && document.getElementById(id);
-    if(target){
-      e.preventDefault();
-      const idx = Array.from(document.querySelectorAll('section.snap')).indexOf(target);
-      if(idx >= 0) go(idx);
-    }
-  });
-});
-
-/* ===== Lightbox ===== */
+/* ── Lightbox ── */
 const lb = document.getElementById('lb');
 const lbImg = document.getElementById('lb-img');
-function openLB(src){ lbImg.src = src; lb.classList.add('open'); }
-function closeLB(){ lb.classList.remove('open'); lbImg.src = ''; }
+function openLB(src) { lbImg.src = src; lb.classList.add('open'); }
+function closeLB() { lb.classList.remove('open'); lbImg.src = ''; }
 document.getElementById('lb-close').addEventListener('click', closeLB);
-lb.addEventListener('click', (e)=>{ if(e.target===lb) closeLB(); });
-window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeLB(); });
+lb.addEventListener('click', e => { if (e.target === lb) closeLB(); });
+window.addEventListener('keydown', e => { if (e.key === 'Escape') closeLB(); });
+document.addEventListener('click', e => {
+  const img = e.target.closest('.lane img, .bundle img, .tile img');
+  if (img) { e.preventDefault(); openLB(img.src); }
+});
 
-/* ===== 3) 子弹式滚动（通用：支持 .bundle 或 .tile 作为单元） ===== */
-function initShootTicker(ticker){
+/* ── Bullet ticker ── */
+function initShootTicker(ticker) {
   const track = ticker.querySelector('.track');
-  const lane = document.createElement('div'); lane.className='lane'; ticker.appendChild(lane);
-
+  const lane = document.createElement('div'); lane.className = 'lane'; ticker.appendChild(lane);
   const SPEED = +(ticker.dataset.speed || 180);
   const GAP   = +(ticker.dataset.gap   || 22);
-
   let units = track ? Array.from(track.querySelectorAll('.bundle')) : [];
-  if(!units.length && track) units = Array.from(track.querySelectorAll('.tile'));
-  if(!units.length && track) units = Array.from(track.children || []);
-  if(!units.length) return;
-
-  // 先探针测高度，撑开容器
-  (function setInitialHeight(){
+  if (!units.length && track) units = Array.from(track.querySelectorAll('.tile'));
+  if (!units.length && track) units = Array.from(track.children || []);
+  if (!units.length) return;
+  (function setH() {
     const probe = units[0].cloneNode(true);
-    probe.style.visibility='hidden'; probe.style.position='absolute'; probe.style.left='-9999px';
+    probe.style.cssText = 'visibility:hidden;position:absolute;left:-9999px';
     ticker.appendChild(probe);
     const h = probe.offsetHeight || probe.getBoundingClientRect().height || 260;
     ticker.style.setProperty('--shoot-h', h + 'px');
     probe.remove();
   })();
-
   let idx = 0, paused = false, destroyed = false;
-
-  function readyToSpawn(){
+  function readyToSpawn() {
     const last = lane.querySelector('.bolt:last-of-type');
-    if(!last) return true;
-    const lastRect = last.getBoundingClientRect();
-    const tRect = ticker.getBoundingClientRect();
-    const space = tRect.right - lastRect.right;
-    return space >= GAP;
+    if (!last) return true;
+    return ticker.getBoundingClientRect().right - last.getBoundingClientRect().right >= GAP;
   }
-
-  function spawn(){
+  function spawn() {
     const node = units[idx++ % units.length].cloneNode(true);
     node.classList.add('bolt'); lane.appendChild(node);
-
-    requestAnimationFrame(()=>{ 
+    requestAnimationFrame(() => {
       const w = node.offsetWidth || 260;
-      const REF_W = 260;
-      const distance = ticker.clientWidth + 600;
-      const dur = distance / SPEED;
-      node.style.setProperty('--w', w + 'px');
+      const dur = (ticker.clientWidth + 600) / SPEED;
       node.style.animation = `bullet ${dur}s linear forwards`;
-      node.addEventListener('animationend', ()=> node.remove());
+      node.addEventListener('animationend', () => node.remove());
       if (paused) node.style.animationPlayState = 'paused';
     });
   }
-
-  function loop(){
-    if (!destroyed){
-      if (!paused && readyToSpawn()) spawn();
-      requestAnimationFrame(loop);
-    }
-  }
+  function loop() { if (!destroyed) { if (!paused && readyToSpawn()) spawn(); requestAnimationFrame(loop); } }
   loop();
-
-  ticker.addEventListener('mouseenter', ()=>{
-    paused = true; lane.querySelectorAll('.bolt').forEach(b=> b.style.animationPlayState='paused');
-  });
-  ticker.addEventListener('mouseleave', ()=>{
-    paused = false; lane.querySelectorAll('.bolt').forEach(b=> b.style.animationPlayState='running');
-  });
-
-  return ()=>{ destroyed = true; };
+  ticker.addEventListener('mouseenter', () => { paused = true;  lane.querySelectorAll('.bolt').forEach(b => b.style.animationPlayState = 'paused'); });
+  ticker.addEventListener('mouseleave', () => { paused = false; lane.querySelectorAll('.bolt').forEach(b => b.style.animationPlayState = 'running'); });
 }
 
-document.addEventListener('click', (e) => {
-    const img = e.target.closest('.lane img, .bundle img, .tile img');
-    if (img) {
-      e.preventDefault();
-      openLB(img.src);
-    }
-});
-// document.querySelectorAll('.ticker[data-mode="shoot"]').forEach(initShootTicker);
-/* ===== 4) 单图位动画：文字高亮与动画同步（兼容 4/5 步） ===== */
-(function initOneAnimCaptions(){
-  const getDurSec = (card)=>{
-    const cs = getComputedStyle(card);
-    let dur = cs.getPropertyValue('--dur').trim() || '12s';
-    if(!dur || dur === '0s'){
-      const layer = card.querySelector('[class*="layer"]');
-      if(layer){
-        const a = getComputedStyle(layer).animationDuration;
-        if(a && a.endsWith('s')) dur = a;
-      }
-    }
-    const n = parseFloat(dur);
-    return isNaN(n) ? 12 : n;
+/* ── Caption highlights ── */
+(function initCaptions() {
+  const getDur = card => {
+    let dur = getComputedStyle(card).getPropertyValue('--dur').trim() || '12s';
+    return parseFloat(dur) || 12;
   };
-
-  // 自动把纯文本 caption 包装为 span（支持 4 或 5 步）
-  document.querySelectorAll('.oneanim-caption, .oneanim5-caption').forEach(cap=>{
-    if(!cap.querySelector('span')){
-      const parts = cap.textContent.split('→').map(s=>s.trim()).filter(Boolean);
-      if(parts.length === 4 || parts.length === 5){
-        cap.innerHTML = parts.map((p,i)=>`<span data-step="${i+1}">${p}</span>`).join(' &nbsp;→&nbsp; ');
-      }
-    }
-  });
-
-  // 绑定所有 4 步卡 & 5 步卡
-  const allItems = [
-    ...document.querySelectorAll('.oneanim-item'),
-    ...document.querySelectorAll('.oneanim5-item')
-  ];
-
-  allItems.forEach(item=>{
+  [...document.querySelectorAll('.oneanim-item'), ...document.querySelectorAll('.oneanim5-item')].forEach(item => {
     const card = item.querySelector('.oneanim-card, .oneanim5-card');
     const cap  = item.querySelector('.oneanim-caption, .oneanim5-caption');
-    if(!card || !cap) return;
-
+    if (!card || !cap) return;
     const spans = cap.querySelectorAll('span[data-step]');
-    if(!spans.length) return;
-
-    const stepCount = spans.length;             // 4 或 5
-    const dur = getDurSec(card);
-    const stepDur = dur / stepCount;
+    if (!spans.length) return;
+    const n = spans.length, stepDur = getDur(card) / n;
     let step = 1;
-
-    const highlight = (s)=>{
-      spans.forEach(el=> el.classList.toggle('active', +el.dataset.step === s));
-    };
-    highlight(step);
-
-    setInterval(()=>{
-      step = (step % stepCount) + 1;
-      highlight(step);
-    }, stepDur * 1000);
+    const hl = s => spans.forEach(el => el.classList.toggle('active', +el.dataset.step === s));
+    hl(step);
+    setInterval(() => { step = (step % n) + 1; hl(step); }, stepDur * 1000);
   });
 })();
 
-
-/* ===== Build demo bundles for Multi‑Reference (3 rows) ===== */
-
-/** 这里列出你有的 demo id（5 张图为一组）。想加就往里写 */
-const DEMO_IDS = [
-"000005",
-"000012",
-"000035",
-"000039",
-"000040",
-"000050",
-"000052",
-"000058",
-"000061",
-"000067",
-"000072",
-"000079",
-"000080",
-"000081",
-"000082",
-"000095",
-"000098",
-"000099",
-"000105",
-"000107",
-"000112",
-"000133",
-"000136",
-"000137",
-"000145",
-"000146",
-"000164",
-"000185",
-"000304",
-"000311",
-"000314",
-"000315",
-"000345",
-"000350"
-];
-
-/** 根据 id 生成 5 张图的 bundle（背景、框、主体、输出、输出+框） */
-function createBundleNode(id){
+/* ── Build t2i tracks ── */
+const T2I_IMGS = ['sa_4110099','sa_4110138','sa_4110217','sa_4110258','sa_4110488','sa_4110608','sa_4110627','sa_4110711','sa_4110718','sa_4110953','sa_4111016','sa_4111660','sa_4111677','sa_4111685'];
+function createT2INode(name) {
   const wrap = document.createElement('div');
-  wrap.className = 'bundle';
-  wrap.innerHTML = `
-    <div class="cell"><img src="assets/single_ref/${id}_info_input.jpg"                  alt="${id} input"></div>
-    <div class="cell"><img src="assets/single_ref/${id}_info_background_annotated.jpg"   alt="${id} background annotated"></div>
-    <div class="cell"><img src="assets/single_ref/${id}_info_output.jpg"                 alt="${id} output"></div>
-  `;
-  return wrap;
-}
-
-/** 把 DEMO_IDS 按轮循分配到 3 行，注入为每行的隐藏 .track 素材池 */
-(function buildMultiRefTracks(){
-  const rows = Array.from(document.querySelectorAll('.ticker.demo-shoot'));
-  if(!rows.length) return;
-
-  // 给每一行创建 .track 容器，并轮流塞入 bundle
-  rows.forEach(row => {
-    const track = document.createElement('div');
-    track.className = 'track';
-    row.appendChild(track);
-  });
-
-  DEMO_IDS.forEach((id, i) => {
-    const row = rows[i % rows.length];      // 轮循到第 i 行
-    const track = row.querySelector('.track');
-    track.appendChild(createBundleNode(id));
-  });
-
-  // 给这些 ticker 标注 data-mode="shoot"，以便后面的初始化逻辑识别
-  rows.forEach(row => row.dataset.mode = 'shoot');
-  rows.forEach(initShootTicker);
-})();
-
-/** 4 图版的 bundle（在 3 图基础上多加一张 background 原图） */
-
-const DEMO_IDS_X4 = [
-'000081',
-'000088',
-'000098',
-'000099',
-'000115',
-'000120',
-'000125',
-'000142',
-'000158',
-'000164',
-'000171',
-'000172',
-'000188',
-'000197',
-'000208',
-'000217',
-'000219',
-  // 按需往下加
-];
-const MULTI_REFERENCE_NOBG = [
-  { id: '001', inputs: 3 },
-  { id: '026', inputs: 2 },
-  { id: '027', inputs: 2 },
-  { id: '018', inputs: 3 },
-  { id: '019', inputs: 3 },
-  { id: '025', inputs: 3 },
-  { id: '028', inputs: 3 },
-  { id: '030', inputs: 3 },
-  { id: '035', inputs: 3 },
-  { id: '041', inputs: 3 },
-  { id: '042', inputs: 3 },
-  { id: '044', inputs: 3 },
-  { id: '066', inputs: 2 },
-  { id: '065', inputs: 2 },
-  { id: '085', inputs: 3 },
-  { id: '090', inputs: 3 },
-  { id: '119', inputs: 3 },
-  { id: '125', inputs: 3 },
-  { id: '134', inputs: 3 },
-  { id: '370', inputs: 3 },
-  { id: '377', inputs: 2 },
-  { id: '381', inputs: 3 },
-  { id: '382', inputs: 2 },
-  { id: '384', inputs: 2 },
-  { id: '387', inputs: 2 },
-  { id: '390', inputs: 2 },
-  { id: '365', inputs: 2 },
-  { id: '362', inputs: 2 },
-  { id: '346', inputs: 3 },
-];
-
-
-/** 生成 4 张图的 bundle */
-function createBundleNode4(id){
-  const wrap = document.createElement('div');
-  wrap.className = 'bundle';
-  wrap.innerHTML = `
-    <div class="cell"><img src="assets/mult_ref/${id}_img1.jpg"               alt="${id} input"></div>
-    <div class="cell"><img src="assets/mult_ref/${id}_img2.jpg"          alt="${id} background"></div>
-    <div class="cell"><img src="assets/mult_ref/${id}_background_annotated.jpg" alt="${id} annotated"></div>
-    <div class="cell"><img src="assets/mult_ref/${id}_output.jpg"              alt="${id} output"></div>
-  `;
-  return wrap;
-}
-
-/** 构建第 5 页（x4）的射流 */
-(function buildMultiRefTracksX4(){
-  const rows = Array.from(document.querySelectorAll('.ticker.demo-shoot4'));
-  if(!rows.length) return;
-
-  rows.forEach(row => {
-    const track = document.createElement('div');
-    track.className = 'track';
-    row.appendChild(track);
-  });
-
-  DEMO_IDS_X4.forEach((id, i) => {
-    const row = rows[i % rows.length];
-    row.querySelector('.track').appendChild(createBundleNode4(id));
-  });
-
-  rows.forEach(row => row.dataset.mode = 'shoot');
-  rows.forEach(initShootTicker);
-})();
-
-/* ===== Text2Image 图片墙 ===== */
-const T2I_IMGS = [
-  'sa_4110099','sa_4110138','sa_4110217','sa_4110258','sa_4110488',
-  'sa_4110608','sa_4110627','sa_4110711','sa_4110718','sa_4110953',
-  'sa_4111016','sa_4111660','sa_4111677','sa_4111685'
-];
-
-function createT2INode(name){
-  const wrap = document.createElement('div');
-  // 高度固定512对应的显示高，宽度auto保持比例
   wrap.style.cssText = 'height:clamp(140px,24vh,260px);border-radius:16px;border:1px solid var(--border);overflow:hidden;background:#0f172a;flex-shrink:0;';
-  wrap.innerHTML = `<img src="assets/ready_to_use/${name}.jpg" alt="${name}" style="height:100%;width:auto;display:block;object-fit:cover;">`;
+  wrap.innerHTML = `<img src="assets/ready_to_use/${name}.jpg" alt="${name}" style="height:100%;width:auto;display:block;object-fit:cover;transform:scale(1.08);transform-origin:center;transition:transform .3s ease;" onmouseover="this.style.transform='scale(1.18)'" onmouseout="this.style.transform='scale(1.08)'">`;
   return wrap;
 }
-
-(function buildT2ITracks(){
+(function() {
   const rows = Array.from(document.querySelectorAll('.ticker.demo-shoot-t2i'));
-  if(!rows.length) return;
-  rows.forEach(row => {
-    const track = document.createElement('div');
-    track.className = 'track';
-    row.appendChild(track);
-  });
-  T2I_IMGS.forEach((name, i) => {
-    const row = rows[i % rows.length];
-    row.querySelector('.track').appendChild(createT2INode(name));
-  });
-  rows.forEach(row => row.dataset.mode = 'shoot');
-  rows.forEach(initShootTicker);
+  if (!rows.length) return;
+  rows.forEach(r => { const t = document.createElement('div'); t.className='track'; r.appendChild(t); });
+  T2I_IMGS.forEach((n,i) => rows[i%rows.length].querySelector('.track').appendChild(createT2INode(n)));
+  rows.forEach(r => { r.dataset.mode='shoot'; initShootTicker(r); });
 })();
 
-/* ===== Multi-Reference 无背景版（只有 img1, img2, output 3张）===== */
-function createBundleNodeNoBg(id, inputs){
-  const wrap = document.createElement('div');
-  wrap.className = 'bundle';
-  
-  const CELL_H = '200px';
-  const colors = ['#ef4444', '#22c55e', '#3b82f6']; // 红绿蓝
-  
-  let html = '';
-  for(let i = 1; i <= inputs; i++){
-    const color = colors[i-1];
-    html += `<div style="height:${CELL_H};border-radius:14px;border:3px solid ${color};overflow:hidden;background:#0f172a;flex-shrink:0;">
-      <img src="assets/multi_ref_nobg/${id}_input${i}.jpg" alt="${id} sub${i}" style="height:100%;width:auto;display:block;">
-    </div>`;
-  }
-  // output 不加颜色框
-  html += `<div style="height:${CELL_H};border-radius:14px;border:1px solid var(--border);overflow:hidden;background:#0f172a;flex-shrink:0;">
-    <img src="assets/multi_ref_nobg/${id}_output.jpg" alt="${id} output" style="height:100%;width:auto;display:block;">
-  </div>`;
-  
-  wrap.innerHTML = html;
+/* ── Build single-ref tracks ── */
+const DEMO_IDS = ["000005","000012","000035","000039","000040","000050","000052","000058","000061","000067","000072","000079","000080","000081","000082","000095","000098","000099","000105","000107","000112","000133","000136","000137","000145","000146","000164","000185","000304","000311","000314","000315","000345","000350"];
+function createBundleNode(id) {
+  const wrap = document.createElement('div'); wrap.className='bundle';
+  wrap.innerHTML = `<div class="cell"><img src="assets/single_ref/${id}_info_input.jpg" alt="${id} input"></div><div class="cell"><img src="assets/single_ref/${id}_info_background_annotated.jpg" alt="${id} bg"></div><div class="cell"><img src="assets/single_ref/${id}_info_output.jpg" alt="${id} out"></div>`;
   return wrap;
 }
-
-(function buildNoBgTracks(){
-  const rows = Array.from(document.querySelectorAll('.ticker.demo-shoot-nobg'));
-  if(!rows.length) return;
-  rows.forEach(row => {
-    const track = document.createElement('div');
-    track.className = 'track';
-    row.appendChild(track);
-  });
-  MULTI_REFERENCE_NOBG.forEach((item, i) => {
-    const row = rows[i % rows.length];
-    row.querySelector('.track').appendChild(createBundleNodeNoBg(item.id, item.inputs));
-  });
-  rows.forEach(row => row.dataset.mode = 'shoot');
-  rows.forEach(initShootTicker);
+(function() {
+  const rows = Array.from(document.querySelectorAll('.ticker.demo-shoot'));
+  if (!rows.length) return;
+  rows.forEach(r => { const t = document.createElement('div'); t.className='track'; r.appendChild(t); });
+  DEMO_IDS.forEach((id,i) => rows[i%rows.length].querySelector('.track').appendChild(createBundleNode(id)));
+  rows.forEach(r => { r.dataset.mode='shoot'; initShootTicker(r); });
 })();
 
-// BibTeX copy
-document.getElementById('copyBibBtn').addEventListener('click', function(){
-  const text = document.getElementById('bibtexContent').innerText;
+/* ── Build multi-ref x4 tracks ── */
+const DEMO_IDS_X4 = ['000081','000088','000098','000099','000115','000120','000125','000142','000158','000164','000171','000172','000188','000197','000208','000217','000219'];
+function createBundleNode4(id) {
+  const wrap = document.createElement('div'); wrap.className='bundle';
+  wrap.innerHTML = `<div class="cell"><img src="assets/mult_ref/${id}_img1.jpg" alt="${id} 1"></div><div class="cell"><img src="assets/mult_ref/${id}_img2.jpg" alt="${id} 2"></div><div class="cell"><img src="assets/mult_ref/${id}_background_annotated.jpg" alt="${id} ann"></div><div class="cell"><img src="assets/mult_ref/${id}_output.jpg" alt="${id} out"></div>`;
+  return wrap;
+}
+(function() {
+  const rows = Array.from(document.querySelectorAll('.ticker.demo-shoot4'));
+  if (!rows.length) return;
+  rows.forEach(r => { const t = document.createElement('div'); t.className='track'; r.appendChild(t); });
+  DEMO_IDS_X4.forEach((id,i) => rows[i%rows.length].querySelector('.track').appendChild(createBundleNode4(id)));
+  rows.forEach(r => { r.dataset.mode='shoot'; initShootTicker(r); });
+})();
 
-  navigator.clipboard.writeText(text).then(()=>{
-    const btn = this;
-    btn.textContent = "Copied!";
-    btn.classList.add('copied');
+/* ── Build nobg tracks ── */
+const MULTI_REFERENCE_NOBG = [{id:'001',inputs:3},{id:'026',inputs:2},{id:'027',inputs:2},{id:'018',inputs:3},{id:'019',inputs:3},{id:'025',inputs:3},{id:'028',inputs:3},{id:'030',inputs:3},{id:'035',inputs:3},{id:'041',inputs:3},{id:'042',inputs:3},{id:'044',inputs:3},{id:'066',inputs:2},{id:'065',inputs:2},{id:'085',inputs:3},{id:'090',inputs:3},{id:'119',inputs:3},{id:'125',inputs:3},{id:'134',inputs:3},{id:'370',inputs:3},{id:'377',inputs:2},{id:'381',inputs:3},{id:'382',inputs:2},{id:'384',inputs:2},{id:'387',inputs:2},{id:'390',inputs:2},{id:'365',inputs:2},{id:'362',inputs:2},{id:'346',inputs:3}];
+const COLORS = ['#ef4444','#22c55e','#3b82f6'];
+function createBundleNodeNoBg(id, inputs) {
+  const wrap = document.createElement('div'); wrap.className='bundle';
+  let html='';
+  for(let i=1;i<=inputs;i++) html+=`<div style="height:240px;border-radius:14px;border:1px solid var(--border);overflow:hidden;background:#0f172a;flex-shrink:0;"><img src="assets/multi_ref_nobg/${id}_input${i}.jpg" style="height:100%;width:auto;display:block;transform:scale(1.08);transform-origin:center;transition:transform .3s ease;object-fit:cover;" onmouseover="this.style.transform='scale(1.18)'" onmouseout="this.style.transform='scale(1.08)'"></div>`;
+  html+=`<div style="height:240px;border-radius:14px;border:1px solid var(--border);overflow:hidden;background:#0f172a;flex-shrink:0;"><img src="assets/multi_ref_nobg/${id}_output.jpg" style="height:100%;width:auto;display:block;transform:scale(1.08);transform-origin:center;transition:transform .3s ease;object-fit:cover;" onmouseover="this.style.transform='scale(1.18)'" onmouseout="this.style.transform='scale(1.08)'"></div>`;
+  wrap.innerHTML=html; return wrap;
+}
+(function() {
+  const rows = Array.from(document.querySelectorAll('.ticker.demo-shoot-nobg'));
+  if (!rows.length) return;
+  rows.forEach(r => { const t = document.createElement('div'); t.className='track'; r.appendChild(t); });
+  MULTI_REFERENCE_NOBG.forEach((item,i) => rows[i%rows.length].querySelector('.track').appendChild(createBundleNodeNoBg(item.id,item.inputs)));
+  rows.forEach(r => { r.dataset.mode='shoot'; initShootTicker(r); });
+})();
 
-    setTimeout(()=>{
-      btn.textContent = "Copy";
-      btn.classList.remove('copied');
-    }, 1500);
+/* ── BibTeX copy ── */
+document.getElementById('copyBibBtn').addEventListener('click', function() {
+  navigator.clipboard.writeText(document.getElementById('bibtexContent').innerText).then(() => {
+    this.innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+    this.classList.add('copied');
+    setTimeout(() => {
+      this.innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy`;
+      this.classList.remove('copied');
+    }, 2000);
   });
 });
 </script>
