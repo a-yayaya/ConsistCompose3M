@@ -40,7 +40,14 @@
     padding:24px;
     overflow:hidden;
   }
+    /* 隐藏容器滚动条：Chrome/Safari/Edge */
+  .snap-container::-webkit-scrollbar { width: 0; height: 0; }
 
+  /* 隐藏容器滚动条：Firefox */
+  .snap-container { scrollbar-width: none; }
+
+  /* 隐藏容器滚动条：老 Edge/IE */
+  .snap-container { -ms-overflow-style: none; }
   .inner{ width:100%; max-width:var(--maxw); padding:24px; }
   .card{
     background:var(--card);
@@ -50,14 +57,46 @@
   }
 
   /* ====== 统计页 ====== */
-  .stats-grid{display:grid; gap:24px; grid-template-columns:repeat(1,minmax(0,1fr));}
-  @media(min-width:900px){ .stats-grid{grid-template-columns:repeat(3,1fr);} }
-  .stat-card{padding:24px}
-  .stat-title{font-weight:800; text-align:center; margin-bottom:12px}
-  .ring{ width:min(260px,60vw); height:min(260px,60vw); margin:0 auto; position:relative; }
-  .ring canvas{position:absolute; inset:0}
-  .ring .center{position:absolute; inset:0; display:grid; place-items:center; font-weight:800; font-size:28px}
-  .ring .center small{display:block; color:var(--muted); font-weight:600; font-size:12px; margin-top:4px}
+  .stats-fullpage {
+    width: 100%;
+    max-width: var(--maxw);
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+  }
+  .stats-grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(1, minmax(0,1fr));
+    flex: 1;
+  }
+  @media(min-width:900px){ .stats-grid{ grid-template-columns: repeat(3,1fr); } }
+  .stat-card {
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+  .stat-title { font-weight:800; text-align:center; font-size: 17px; }
+  .ring {
+    width: min(300px, 28vw, 38vh);
+    height: min(300px, 28vw, 38vh);
+    margin: 0 auto;
+    position: relative;
+  }
+  .ring canvas { position:absolute; inset:0; }
+  .ring .center {
+    position:absolute; inset:0;
+    display:grid; place-items:center;
+    font-weight:800; font-size: clamp(22px, 2.5vw, 32px);
+    text-align: center;
+  }
+  .ring .center small {
+    display:block; color:var(--muted);
+    font-weight:600; font-size:12px; margin-top:6px;
+  }
 
   /* ====== 样例页（可复用） ====== */
   .gallery{display:grid; gap:18px; grid-template-columns:repeat(2,1fr)}
@@ -395,11 +434,294 @@
   color: var(--blue);
   text-shadow: 0 0 10px rgba(96,165,250,.35);
 }
+/* ====== 顶部导航栏 ====== */
+  .topnav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    height: 58px;
+    background: rgba(11, 15, 25, 0.35);
+    backdrop-filter: blur(24px) saturate(1.5);
+    -webkit-backdrop-filter: blur(24px) saturate(1.5);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .topnav-brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    text-decoration: none;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .topnav-brand-logo {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+  .topnav-brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+  .topnav-brand-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #f1f5f9;
+    letter-spacing: .2px;
+  }
+  .topnav-brand-sub {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 500;
+  }
+  .topnav-inner {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    height: 100%;
+  }
+  .topnav-item {
+    display: inline-flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #94a3b8;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    transition: color .2s;
+    text-decoration: none;
+    position: relative;
+    white-space: nowrap;
+  }
+  .topnav-item:hover {
+    color: #e2e8f0;
+    text-decoration: none;
+  }
+  .topnav-item.active {
+    color: #fff;
+    font-weight: 600;
+  }
+  .topnav-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 22px; height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #60a5fa, #a78bfa);
+  }
+  /* 第一个 active 项加边框高亮（对应参考图的 Home 胶囊） */
+  .topnav-item:first-child.active {
+    border: 1px solid rgba(148,163,184,0.4);
+    border-radius: 6px;
+    padding: 4px 14px;
+    height: auto;
+  }
+  .topnav-item:first-child.active::after { display: none; }
+  .topnav-sep { display: none; }
 
+  /* ====== card 玻璃拟态 ====== */
+  .card {
+    background: rgba(17, 24, 39, 0.35) !important;
+    backdrop-filter: blur(24px) saturate(1.5);
+    -webkit-backdrop-filter: blur(24px) saturate(1.5);
+    border: 1px solid rgba(255,255,255,0.10) !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,0.07) !important;
+  }
+  /* Stats 外层无卡片，BibTeX 外层大 card：更通透 */
+  #bibtex .card {
+    background: rgba(15, 20, 35, 0.28) !important;
+  }
+  /* stat-card 内嵌小卡片 */
+  .stat-card.card {
+    background: rgba(8, 12, 22, 0.40) !important;
+  }
+
+  /* BibTeX 页：纵向布局，bibtex卡片居中，footer 贴底 */
+  #bibtex {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 0 0;
+    gap: 0;
+  }
+  #bibtex .inner {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 100%;
+    padding: 24px 24px;
+  }
+  #bibtex .inner > .card {
+    width: 100%;
+    max-width: var(--maxw);
+  }
+  #bibtex .site-footer {
+    width: 100%;
+    flex-shrink: 0;
+  }
+  .site-footer {
+    flex-shrink: 0;
+    padding: 24px 40px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    background: transparent;
+  }
+  .footer-inner {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    max-width: var(--maxw);
+    margin: 0 auto;
+  }
+  .footer-left {
+    flex: 1;
+    min-width: 0;
+  }
+  .footer-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 6px;
+  }
+  .footer-desc {
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .footer-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(148,163,184,0.3);
+    background: rgba(255,255,255,0.04);
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color .2s, border-color .2s, background .2s;
+  }
+  .footer-btn:hover {
+    color: #e2e8f0;
+    border-color: rgba(148,163,184,0.5);
+    background: rgba(255,255,255,0.08);
+    text-decoration: none;
+  }
+  .footer-notes {
+    width: 340px;
+    flex-shrink: 0;
+    padding: 20px 22px !important;
+    background: rgba(17,24,39,0.40) !important;
+  }
+  .footer-notes-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 8px;
+  }
+  .footer-notes-body {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.6;
+  }
+  @media (max-width: 700px) {
+    .footer-inner { flex-direction: column; }
+    .footer-notes { width: 100%; }
+  }
+.copy-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 7px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(30, 41, 59, 0.75);
+  color: #94a3b8;
+  cursor: pointer;
+  transition: color .15s, background .15s, border-color .15s, opacity .15s;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  letter-spacing: .01em;
+}
+/* 悬停代码块时才显示 */
+#bibtex .card:hover .copy-btn,
+.copy-btn:focus {
+  opacity: 1;
+}
+.copy-btn::before {
+  content: '';
+  display: inline-block;
+  width: 13px; height: 13px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='13' height='13' rx='2'/%3E%3Cpath d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  flex-shrink: 0;
+}
+.copy-btn:hover {
+  background: rgba(51, 65, 85, 0.90);
+  border-color: rgba(255,255,255,0.20);
+  color: #e2e8f0;
+  opacity: 1;
+}
+.copy-btn.copied {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.35);
+  color: #4ade80;
+  opacity: 1;
+}
+.copy-btn.copied::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234ade80' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+}
 </style>
 </head>
 
 <body>
+
+<!-- 顶部导航 -->
+<nav class="topnav" id="topnav">
+  <!-- 左侧 Logo + 标题 -->
+  <a class="topnav-brand" data-section="0" href="#home">
+    <img src="assets/logo.png" alt="Logo" class="topnav-brand-logo">
+    <div class="topnav-brand-text">
+      <span class="topnav-brand-name">ConsistCompose3M</span>
+      <span class="topnav-brand-sub">Dataset Gallery</span>
+    </div>
+  </a>
+  <!-- 右侧导航链接 -->
+  <div class="topnav-inner">
+    <a class="topnav-item" data-section="0" href="#home">Home</a>
+    <a class="topnav-item" data-section="1" href="#stats">Statistics</a>
+    <a class="topnav-item" data-section="2" href="#text2image">Text2Image</a>
+    <a class="topnav-item" data-section="3" href="#single-anim-grid">Single Subject</a>
+    <a class="topnav-item" data-section="4" href="#multiref">Single Wall</a>
+    <a class="topnav-item" data-section="5" href="#double-anim-grid">Multi-subject</a>
+    <a class="topnav-item" data-section="6" href="#multiref-x4">Multi Wall (FLUX)</a>
+    <a class="topnav-item" data-section="7" href="#multiref-nobg">Multi Wall (Qwen)</a>
+    <a class="topnav-item" data-section="8" href="#bibtex">BibTeX</a>
+  </div>
+</nav>
 
 <!-- Lightbox -->
 <div class="lb" id="lb" aria-hidden="true">
@@ -412,35 +734,35 @@
   <section class="snap hero-landing" id="home">
     <div class="hero-content">
       <img src="assets/logo.png" alt="Logo" class="hero-logo">
-      <h1>ConsistCompose Dataset</h1>
-      <p>Dataset Gallery of ConsistCompose Data</p>
+      <h1>ConsistCompose3M</h1>
+      <p>Dataset Gallery of ConsistCompose3M</p>
       <div class="hero-buttons">
         <a href="#stats" class="btn">● Explore</a>
         <a href="https://arxiv.org/abs/2511.18333" class="btn">📄 Paper</a>
-        <a href="https://huggingface.co/datasets/sensenova/ConsistCompose3M" class="btn">💻 Code</a>
+        <a href="https://huggingface.co/sensenova/ConsistCompose-BAGEL-7B-MoT" class="btn">🤗 Model</a>
+        <a href="https://github.com/OpenSenseNova/ConsistCompose" class="btn">💻 Code</a>
         <a href="https://huggingface.co/datasets/sensenova/ConsistCompose3M" class="btn">📂 Dataset</a>
+        <a href="#bibtex" class="btn">📑 BibTeX</a>
       </div>
     </div>
   </section>
 
   <!-- Page 2: STATS -->
   <section class="snap" id="stats">
-    <div class="inner">
-      <div class="card" style="padding:26px">
-        <h2 class="section-title">Data Statistics</h2>
-        <div class="stats-grid">
-          <div class="card stat-card">
-            <div class="stat-title" style="color:#fb72c3">Text2Image</div>
-            <div class="ring" data-color="#fb72c3" data-track="#3b3b44" data-value="2665502" data-total="3533939"></div>
-          </div>
-          <div class="card stat-card">
-            <div class="stat-title" style="color:#a78bfa">Single-Reference</div>
-            <div class="ring" data-color="#a78bfa" data-track="#3b3b44" data-value="77807" data-total="3533939"></div>
-          </div>
-          <div class="card stat-card">
-            <div class="stat-title" style="color:#5fb0ff">Multi-Reference</div>
-            <div class="ring" data-color="#5fb0ff" data-track="#3b3b44" data-value="790630" data-total="3533939"></div>
-          </div>
+    <div class="stats-fullpage">
+      <h2 class="section-title" style="margin-bottom:24px;">Data Statistics</h2>
+      <div class="stats-grid">
+        <div class="card stat-card">
+          <div class="stat-title" style="color:#fb72c3">Text2Image</div>
+          <div class="ring" data-color="#fb72c3" data-track="#3b3b44" data-value="2665502" data-total="3533939"></div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-title" style="color:#a78bfa">Single-Reference</div>
+          <div class="ring" data-color="#a78bfa" data-track="#3b3b44" data-value="77807" data-total="3533939"></div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-title" style="color:#5fb0ff">Multi-Reference</div>
+          <div class="ring" data-color="#5fb0ff" data-track="#3b3b44" data-value="790630" data-total="3533939"></div>
         </div>
       </div>
     </div>
@@ -794,7 +1116,54 @@
     </div>
   </section>
 
+    
+<!-- Page: BibTeX -->
+<section class="snap" id="bibtex">
+
+  <!-- BibTeX 主卡片（居中） -->
+  <div class="inner">
+    <div class="card" style="padding:26px; position:relative;">
+      <h2 class="section-title">BibTeX</h2>
+      <p style="color:var(--muted); font-size:14px; margin:-6px 0 16px;">Click <strong style="color:#e2e8f0;">Copy</strong> to copy the citation into clipboard.</p>
+      <div style="position:relative;">
+        <button id="copyBibBtn" class="copy-btn">Copy</button>
+        <pre id="bibtexContent" style="white-space:pre-wrap; word-break:break-word; color:#e6e9ef; background:rgba(5,8,18,0.55); border:1px solid rgba(255,255,255,0.08); padding:20px; border-radius:14px; overflow:hidden; font-size:13.5px; line-height:1.7;"><code>@article{shi2025consistcompose,
+  title={ConsistCompose: Unified Multimodal Layout Control for Image Composition},
+  author={Shi, Xuanke and Li, Boxuan and Han, Xiaoyang and Cai, Zhongang and Yang, Lei and Lin, Dahua and Wang, Quan},
+  journal={arXiv preprint arXiv:2511.18333},
+  year={2025}
+}</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer 贴底 -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <div class="footer-title">ConsistCompose3M</div>
+        <div class="footer-desc">Dataset Gallery · ConsistCompose Project</div>
+        <div class="footer-links">
+          <a href="https://arxiv.org/abs/2511.18333" target="_blank" class="footer-btn">Paper</a>
+          <a href="https://github.com/OpenSenseNova/ConsistCompose" target="_blank" class="footer-btn">Code</a>
+          <a href="https://huggingface.co/sensenova/ConsistCompose-BAGEL-7B-MoT" target="_blank" class="footer-btn">Model</a>
+          <a href="https://huggingface.co/datasets/sensenova/ConsistCompose3M" target="_blank" class="footer-btn">Dataset</a>
+        </div>
+      </div>
+      <div class="footer-notes card">
+        <div class="footer-notes-title">Notes</div>
+        <div class="footer-notes-body">
+          This gallery showcases samples from the ConsistCompose3M dataset. Navigate between sections using the top bar or scroll to explore all data categories.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</section>
+
 </div>
+
+
 
 <!-- 右侧分页点 -->
 <div class="dots" id="dots"></div>
@@ -813,6 +1182,10 @@ sections.forEach((_,i)=>{
 function mark(i){
   active=i;
   dotsWrap.querySelectorAll('.dot').forEach((el,idx)=>el.classList.toggle('active', idx===i));
+  // 同步顶部导航高亮
+  document.querySelectorAll('.topnav-item[data-section]').forEach(el=>{
+    el.classList.toggle('active', parseInt(el.dataset.section)===i);
+  });
 }
 function go(i){
   i=Math.max(0,Math.min(sections.length-1,i));
@@ -821,7 +1194,14 @@ function go(i){
 }
 mark(0);
 
-/* 滚轮/触摸节流 */
+/* 顶部导航点击（含 brand） */
+document.querySelectorAll('.topnav-item[data-section], .topnav-brand[data-section]').forEach(el=>{
+  el.addEventListener('click', e=>{
+    e.preventDefault();
+    go(parseInt(el.dataset.section));
+  });
+});
+
 let lock=0;
 container.addEventListener('wheel',e=>{
   e.preventDefault();
@@ -1264,6 +1644,22 @@ function createBundleNodeNoBg(id, inputs){
   rows.forEach(row => row.dataset.mode = 'shoot');
   rows.forEach(initShootTicker);
 })();
+
+// BibTeX copy
+document.getElementById('copyBibBtn').addEventListener('click', function(){
+  const text = document.getElementById('bibtexContent').innerText;
+
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = this;
+    btn.textContent = "Copied!";
+    btn.classList.add('copied');
+
+    setTimeout(()=>{
+      btn.textContent = "Copy";
+      btn.classList.remove('copied');
+    }, 1500);
+  });
+});
 </script>
 </body>
 </html>
