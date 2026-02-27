@@ -97,7 +97,7 @@ section {
 .sec-title {
   font-family: ui-sans-serif, system-ui, sans-serif;
   font-size: clamp(24px, 3vw, 36px); font-weight: 700;
-  letter-spacing: -.02em; margin-bottom: 28px; color: #f1f5f9;
+  letter-spacing: -.02em; margin-bottom: 18px; color: #f1f5f9; /* tighter than 28px */
   display: flex; align-items: center; gap: 12px;
 }
 .sec-title::before {
@@ -116,7 +116,6 @@ section {
   box-shadow: 0 8px 32px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,0.05);
 }
 /* Keep .card as alias */
-.card { }
 .card { background: rgba(15,23,42,0.40); backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 8px 32px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,0.05); }
 
 /* ══════════════ HERO ══════════════ */
@@ -194,11 +193,14 @@ section {
 .ring .center small { display: block; color: var(--muted); font-weight: 600; font-size: 12px; margin-top: 6px; }
 
 /* ══════════════ TICKER SECTIONS (shared) ══════════════ */
-.ticker-section { min-height: 80vh; padding: 80px 0 60px; width: 100%; }
+.ticker-section { min-height: 100vh; padding: 92px 0 60px; width: 100%; } /* slightly tighter than generic section */
 .ticker-section .sec-wrap { padding: 0 40px; }
 .ticker { position: relative; overflow: hidden; }
-.ticker .track { display: inline-flex; align-items: center; gap: 22px; flex-wrap: nowrap; white-space: nowrap; }
-.row-gap { margin-top: 14px; }
+.ticker .track { display: inline-flex; align-items: center; gap: 12px; flex-wrap: nowrap; white-space: nowrap; }
+
+/* row spacing (restore larger vertical rhythm like original) */
+.row-gap { margin-top: 28px; }
+/* first row keeps normal spacing for consistent layout */
 
 /* bullet / bundle / tile */
 .tile { border-radius: 16px; border: 1px solid var(--border); background: #0f172a; overflow: hidden; height: clamp(140px,24vh,260px); width: clamp(140px,24vh,260px); }
@@ -298,7 +300,7 @@ section {
   transition: all .15s; backdrop-filter: blur(8px);
 }
 .bibtex-wrap:hover .bibtex-copy { opacity: 1; }
-.bibtex-copy:hover { background: rgba(51,65,85,0.9); color: #e2e8f0; border-color: rgba(255,255,255,0.2); }
+.bibtex-copy:hover { background: rgba(51,65,85,0.9); color: #e2e8f0; border-color: rgba(255,255,255,0.2); text-decoration: none; }
 .bibtex-copy.copied { background: rgba(34,197,94,0.15); border-color: rgba(34,197,94,0.4); color: #4ade80; opacity: 1; }
 
 /* ══════════════ LIGHTBOX ══════════════ */
@@ -340,6 +342,44 @@ section {
 
 /* Section divider */
 .sec-divider { width: 100%; max-width: var(--maxw); height: 1px; background: var(--border); margin: 0 auto; }
+/* ===== Remove excessive bottom whitespace ===== */
+#bibtex{
+  min-height: auto;
+  padding: 60px 24px 40px;
+}
+
+.pp-footer{
+  border-top: 1px solid var(--border);
+  padding: 24px 48px; /* reduced vertical padding */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--muted);
+
+  background: rgba(8,12,20,0.50);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.pp-footer a{
+  color: var(--blue);
+  text-decoration: none;
+}
+
+.pp-footer a:hover{
+  text-decoration: underline;
+}
+
+.pp-footer-links{
+  display:flex;
+  gap:20px;
+  align-items:center;
+}
 </style>
 </head>
 <body>
@@ -418,9 +458,9 @@ section {
   <div class="sec-wrap">
     <div class="sec-label reveal">Category 1</div>
     <h2 class="sec-title reveal">Layout Text to Image</h2>
-    <div class="ticker row-gap shoot demo-shoot-t2i" data-speed="200" data-gap="24"></div>
-    <div class="ticker row-gap shoot demo-shoot-t2i" data-speed="190" data-gap="24"></div>
-    <div class="ticker row-gap shoot demo-shoot-t2i" data-speed="180" data-gap="24"></div>
+    <div class="ticker row-gap shoot demo-shoot-t2i" data-speed="200" data-gap="12"></div>
+    <div class="ticker row-gap shoot demo-shoot-t2i" data-speed="190" data-gap="12"></div>
+    <div class="ticker row-gap shoot demo-shoot-t2i" data-speed="180" data-gap="12"></div>
   </div>
 </section>
 
@@ -486,9 +526,9 @@ section {
   <div class="sec-wrap">
     <div class="sec-label reveal">Category 2 — Full Wall</div>
     <h2 class="sec-title reveal">Single Subject Image Wall</h2>
-    <div class="ticker row-gap shoot demo-shoot" data-speed="200" data-gap="24"></div>
-    <div class="ticker row-gap shoot demo-shoot" data-speed="190" data-gap="24"></div>
-    <div class="ticker row-gap shoot demo-shoot" data-speed="180" data-gap="24"></div>
+    <div class="ticker row-gap shoot demo-shoot" data-speed="200" data-gap="12"></div>
+    <div class="ticker row-gap shoot demo-shoot" data-speed="190" data-gap="12"></div>
+    <div class="ticker row-gap shoot demo-shoot" data-speed="180" data-gap="12"></div>
   </div>
 </section>
 
@@ -554,9 +594,9 @@ section {
   <div class="sec-wrap">
     <div class="sec-label reveal">Category 3 — Full Wall</div>
     <h2 class="sec-title reveal">Multi-subject Image Wall (FLUX)</h2>
-    <div class="ticker row-gap shoot demo-shoot4" data-speed="200" data-gap="24"></div>
-    <div class="ticker row-gap shoot demo-shoot4" data-speed="190" data-gap="24"></div>
-    <div class="ticker row-gap shoot demo-shoot4" data-speed="180" data-gap="24"></div>
+    <div class="ticker row-gap shoot demo-shoot4" data-speed="200" data-gap="12"></div>
+    <div class="ticker row-gap shoot demo-shoot4" data-speed="190" data-gap="12"></div>
+    <div class="ticker row-gap shoot demo-shoot4" data-speed="180" data-gap="12"></div>
   </div>
 </section>
 
@@ -567,9 +607,9 @@ section {
   <div class="sec-wrap">
     <div class="sec-label reveal">Category 3 — Qwen</div>
     <h2 class="sec-title reveal">Multi-subject Image Wall (Qwen Image)</h2>
-    <div class="ticker row-gap shoot demo-shoot-nobg" data-speed="200" data-gap="24"></div>
-    <div class="ticker row-gap shoot demo-shoot-nobg" data-speed="190" data-gap="24"></div>
-    <div class="ticker row-gap shoot demo-shoot-nobg" data-speed="180" data-gap="24"></div>
+    <div class="ticker row-gap shoot demo-shoot-nobg" data-speed="200" data-gap="12"></div>
+    <div class="ticker row-gap shoot demo-shoot-nobg"></div>
+    <div class="ticker row-gap shoot demo-shoot-nobg" data-speed="180" data-gap="28"></div>
   </div>
 </section>
 
@@ -577,44 +617,45 @@ section {
 
 <!-- ══════════ BIBTEX ══════════ -->
 <section id="bibtex">
-  <div style="flex:1;display:flex;align-items:center;justify-content:center;width:100%;padding:20px 0;">
-    <div class="card bibtex-card">
-      <div class="sec-label" style="margin-bottom:10px;">Citation</div>
-      <h2 class="sec-title">BibTeX</h2>
-      <p class="bibtex-sub">Click <strong style="color:#e2e8f0;">Copy</strong> to copy the citation into clipboard.</p>
-      <div class="bibtex-wrap">
-        <button class="bibtex-copy" id="copyBibBtn">
-          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          Copy
-        </button>
-        <pre class="bibtex-pre" id="bibtexContent">@article{shi2025consistcompose,
+  <div class="container" style="max-width:820px;">
+    <div class="sec-label reveal">Citation</div>
+    <h2 class="sec-title reveal">BibTeX</h2>
+    <p style="font-family:ui-sans-serif,system-ui,sans-serif;font-size:14px;color:var(--muted);margin-bottom:20px;" class="reveal">
+      If you find our work useful, please cite:
+    </p>
+
+    <div class="bibtex-wrap reveal">
+      <button class="bibtex-copy" id="copyBibBtn">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <rect x="9" y="9" width="13" height="13" rx="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+        Copy
+      </button>
+
+      <pre class="bibtex-pre" id="bibtexContent">@article{shi2025consistcompose,
   title={ConsistCompose: Unified Multimodal Layout Control for Image Composition},
-  author={Shi, Xuanke and Li, Boxuan and Han, Xiaoyang and Cai, Zhongang and Yang, Lei and Lin, Dahua and Wang, Quan},
+  author={Shi, Xuanke and Li, Boxuan and Han, Xiaoyang and Cai, Zhongang and
+          Yang, Lei and Lin, Dahua and Wang, Quan},
   journal={arXiv preprint arXiv:2511.18333},
   year={2025}
 }</pre>
-      </div>
     </div>
   </div>
-
-  <!-- Footer -->
-  <footer class="site-footer">
-    <div class="footer-left">
-      <div class="footer-title">ConsistCompose3M</div>
-      <div class="footer-desc">Dataset Gallery · ConsistCompose Project</div>
-      <div class="footer-links">
-        <a href="https://arxiv.org/abs/2511.18333" target="_blank" class="footer-btn">Paper</a>
-        <a href="https://github.com/OpenSenseNova/ConsistCompose" target="_blank" class="footer-btn">Code</a>
-        <a href="https://huggingface.co/sensenova/ConsistCompose-BAGEL-7B-MoT" target="_blank" class="footer-btn">Model</a>
-        <a href="https://huggingface.co/datasets/sensenova/ConsistCompose3M" target="_blank" class="footer-btn">Dataset</a>
-      </div>
-    </div>
-    <div class="glass footer-notes">
-      <div class="footer-notes-title">Notes</div>
-      <div class="footer-notes-body">This gallery showcases samples from the ConsistCompose3M dataset. Navigate between sections using the top bar or scroll to explore all categories.</div>
-    </div>
-  </footer>
 </section>
+
+<!-- ══════════ FOOTER (PROJECT-PAGE IDENTICAL VISUAL) ══════════ -->
+<footer class="pp-footer">
+  <div>
+    <strong style="color:#e2e8f0;">ConsistCompose</strong>
+    &nbsp;·&nbsp; SenseTime Research &nbsp;·&nbsp; 2026
+  </div>
+  <div class="pp-footer-links">
+    <a href="https://arxiv.org/abs/2511.18333" target="_blank">Paper</a>
+    <a href="https://github.com/OpenSenseNova/ConsistCompose" target="_blank">Code</a>
+    <a href="https://opensensenova.github.io/ConsistCompose/" target="_blank">Project Page</a>
+  </div>
+</footer>
 
 <script>
 /* ── Nav active on scroll ── */
@@ -735,13 +776,19 @@ function initShootTicker(ticker) {
   });
 })();
 
-/* ── Build t2i tracks ── */
+/* ── Build t2i tracks (wrapped; fixed height; variable width preserved) ── */
 const T2I_IMGS = ['sa_4110099','sa_4110138','sa_4110217','sa_4110258','sa_4110488','sa_4110608','sa_4110627','sa_4110711','sa_4110718','sa_4110953','sa_4111016','sa_4111660','sa_4111677','sa_4111685'];
 function createT2INode(name) {
-  const wrap = document.createElement('div');
-  wrap.style.cssText = 'height:clamp(140px,24vh,260px);border-radius:16px;border:1px solid var(--border);overflow:hidden;background:#0f172a;flex-shrink:0;';
-  wrap.innerHTML = `<img src="assets/ready_to_use/${name}.jpg" alt="${name}" style="height:100%;width:auto;display:block;object-fit:cover;transform:scale(1.08);transform-origin:center;transition:transform .3s ease;" onmouseover="this.style.transform='scale(1.18)'" onmouseout="this.style.transform='scale(1.08)'">`;
-  return wrap;
+  const outer = document.createElement('div');
+  outer.className = 'bundle';
+  outer.style.padding = '8px';
+
+  const inner = document.createElement('div');
+  inner.style.cssText = 'height:clamp(120px,18vh,200px);border-radius:12px;border:1px solid var(--border);overflow:hidden;background:#0f172a;flex-shrink:0;';
+  inner.innerHTML = `<img src="assets/ready_to_use/${name}.jpg" alt="${name}" style="height:100%;width:auto;display:block;object-fit:contain;transform:scale(1.06);transform-origin:center;transition:transform .25s ease;" onmouseover="this.style.transform='scale(1.12)'" onmouseout="this.style.transform='scale(1.06)'"></img>`;
+
+  outer.appendChild(inner);
+  return outer;
 }
 (function() {
   const rows = Array.from(document.querySelectorAll('.ticker.demo-shoot-t2i'));
@@ -781,15 +828,27 @@ function createBundleNode4(id) {
   rows.forEach(r => { r.dataset.mode='shoot'; initShootTicker(r); });
 })();
 
-/* ── Build nobg tracks ── */
+/* ── Build nobg tracks (wrapped; fixed height; variable width preserved) ── */
 const MULTI_REFERENCE_NOBG = [{id:'001',inputs:3},{id:'026',inputs:2},{id:'027',inputs:2},{id:'018',inputs:3},{id:'019',inputs:3},{id:'025',inputs:3},{id:'028',inputs:3},{id:'030',inputs:3},{id:'035',inputs:3},{id:'041',inputs:3},{id:'042',inputs:3},{id:'044',inputs:3},{id:'066',inputs:2},{id:'065',inputs:2},{id:'085',inputs:3},{id:'090',inputs:3},{id:'119',inputs:3},{id:'125',inputs:3},{id:'134',inputs:3},{id:'370',inputs:3},{id:'377',inputs:2},{id:'381',inputs:3},{id:'382',inputs:2},{id:'384',inputs:2},{id:'387',inputs:2},{id:'390',inputs:2},{id:'365',inputs:2},{id:'362',inputs:2},{id:'346',inputs:3}];
-const COLORS = ['#ef4444','#22c55e','#3b82f6'];
 function createBundleNodeNoBg(id, inputs) {
-  const wrap = document.createElement('div'); wrap.className='bundle';
-  let html='';
-  for(let i=1;i<=inputs;i++) html+=`<div style="height:240px;border-radius:14px;border:1px solid var(--border);overflow:hidden;background:#0f172a;flex-shrink:0;"><img src="assets/multi_ref_nobg/${id}_input${i}.jpg" style="height:100%;width:auto;display:block;transform:scale(1.08);transform-origin:center;transition:transform .3s ease;object-fit:cover;" onmouseover="this.style.transform='scale(1.18)'" onmouseout="this.style.transform='scale(1.08)'"></div>`;
-  html+=`<div style="height:240px;border-radius:14px;border:1px solid var(--border);overflow:hidden;background:#0f172a;flex-shrink:0;"><img src="assets/multi_ref_nobg/${id}_output.jpg" style="height:100%;width:auto;display:block;transform:scale(1.08);transform-origin:center;transition:transform .3s ease;object-fit:cover;" onmouseover="this.style.transform='scale(1.18)'" onmouseout="this.style.transform='scale(1.08)'"></div>`;
-  wrap.innerHTML=html; return wrap;
+  const wrap = document.createElement('div');
+  wrap.className = 'bundle';
+  wrap.style.gap = '10px';
+  wrap.style.padding = '8px';
+
+  for (let i = 1; i <= inputs; i++) {
+    const cell = document.createElement('div');
+    cell.style.cssText = 'height:clamp(120px,16vh,190px);border-radius:12px;border:1px solid var(--border);overflow:hidden;background:#0f172a;flex-shrink:0;';
+    cell.innerHTML = `<img src="assets/multi_ref_nobg/${id}_input${i}.jpg" alt="${id} input${i}" style="height:100%;width:auto;display:block;object-fit:contain;transform:scale(1.06);transform-origin:center;transition:transform .25s ease;" onmouseover="this.style.transform='scale(1.12)'" onmouseout="this.style.transform='scale(1.06)'"></img>`;
+    wrap.appendChild(cell);
+  }
+
+  const out = document.createElement('div');
+  out.style.cssText = 'height:clamp(120px,16vh,190px);border-radius:12px;border:1px solid var(--border);overflow:hidden;background:#0f172a;flex-shrink:0;';
+  out.innerHTML = `<img src="assets/multi_ref_nobg/${id}_output.jpg" alt="${id} output" style="height:100%;width:auto;display:block;object-fit:contain;transform:scale(1.06);transform-origin:center;transition:transform .25s ease;" onmouseover="this.style.transform='scale(1.12)'" onmouseout="this.style.transform='scale(1.06)'"></img>`;
+  wrap.appendChild(out);
+
+  return wrap;
 }
 (function() {
   const rows = Array.from(document.querySelectorAll('.ticker.demo-shoot-nobg'));
@@ -810,6 +869,88 @@ document.getElementById('copyBibBtn').addEventListener('click', function() {
     }, 2000);
   });
 });
+/* ===== Wheel-to-section snapping (Project-Page style) ===== */
+(function () {
+  // 1) 收集所有 section（必须有 id）
+  const sections = Array.from(document.querySelectorAll('section[id]'));
+  if (sections.length === 0) return;
+
+  // 2) 工具：判断是否在“可滚动容器”内部滚动（比如 gallery 墙、代码块等）
+  function isInsideScrollable(el) {
+    for (let cur = el; cur && cur !== document.body; cur = cur.parentElement) {
+      const style = getComputedStyle(cur);
+      const oy = style.overflowY;
+      const ox = style.overflowX;
+      const canScrollY = (oy === 'auto' || oy === 'scroll') && cur.scrollHeight > cur.clientHeight + 2;
+      const canScrollX = (ox === 'auto' || ox === 'scroll') && cur.scrollWidth > cur.clientWidth + 2;
+      if (canScrollY || canScrollX) return true;
+    }
+    return false;
+  }
+
+  // 3) 当前“最接近视口顶部”的 section index
+  function currentIndex() {
+    const y = window.scrollY || window.pageYOffset;
+    let best = 0;
+    let bestDist = Infinity;
+    for (let i = 0; i < sections.length; i++) {
+      const top = sections[i].offsetTop;
+      const dist = Math.abs(top - y);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = i;
+      }
+    }
+    return best;
+  }
+
+  // 4) 节流：避免一个滚轮触发多次跳转
+  let locked = false;
+  let lastMoveAt = 0;
+  const COOLDOWN_MS = 650; // 你可以改成 500~900 之间
+
+  function goTo(idx) {
+    idx = Math.max(0, Math.min(sections.length - 1, idx));
+    sections[idx].scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // 5) 主监听：window 级别捕获滚轮
+  window.addEventListener('wheel', (e) => {
+    // 允许触控板水平滚动/缩放等：如果横向更强，不拦截
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+
+    // 如果鼠标在可滚动容器内部（比如你 gallery 的滑动区域），不劫持
+    if (isInsideScrollable(e.target)) return;
+
+    // 防抖/冷却
+    const now = Date.now();
+    if (locked || (now - lastMoveAt) < COOLDOWN_MS) {
+      e.preventDefault();
+      return;
+    }
+
+    // 小幅滚动不触发（触控板特别敏感）
+    const THRESH = 18;
+    if (Math.abs(e.deltaY) < THRESH) return;
+
+    e.preventDefault(); // 必须：否则浏览器自身滚动 + 你 scrollIntoView 会叠加导致乱跳
+
+    locked = true;
+    lastMoveAt = now;
+
+    const idx = currentIndex();
+    if (e.deltaY > 0) {
+      // 下滑 -> 下一 section
+      goTo(idx + 1);
+    } else {
+      // 上滑 -> 上一 section
+      goTo(idx - 1);
+    }
+
+    // smooth scroll 完成前给锁一点时间
+    setTimeout(() => { locked = false; }, COOLDOWN_MS);
+  }, { passive: false });
+})();
 </script>
 </body>
 </html>
